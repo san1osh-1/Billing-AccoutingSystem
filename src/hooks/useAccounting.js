@@ -1,34 +1,32 @@
-import { useState } from 'react'
-import { generateProfitLoss, generateBalanceSheet, generateCashFlow, generateTrialBalance } from '../data/reports'
+import { useState, useEffect } from 'react'
+import { chartOfAccounts, journalEntries, customerLedger, supplierLedger } from '../data/accounting'
 
-export default function useReports() {
-  const [currentReport, setCurrentReport] = useState(null)
-  const [loading, setLoading] = useState(false)
+export default function useAccounting() {
+  const [accounts, setAccounts] = useState([])
+  const [journal, setJournal] = useState([])
+  const [customerLedgerData, setCustomerLedgerData] = useState([])
+  const [supplierLedgerData, setSupplierLedgerData] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const generateReport = (type, startDate, endDate) => {
-    setLoading(true)
-    setTimeout(() => {
-      let report
-      switch (type) {
-        case 'profit-loss':
-          report = generateProfitLoss(startDate, endDate)
-          break
-        case 'balance-sheet':
-          report = generateBalanceSheet(endDate)
-          break
-        case 'cash-flow':
-          report = generateCashFlow(startDate, endDate)
-          break
-        case 'trial-balance':
-          report = generateTrialBalance(endDate)
-          break
-        default:
-          report = null
-      }
-      setCurrentReport(report)
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setAccounts(chartOfAccounts)
+      setJournal(journalEntries)
+      setCustomerLedgerData(customerLedger)
+      setSupplierLedgerData(supplierLedger)
       setLoading(false)
-    }, 500)
+    }, 300)
+    return () => clearTimeout(t)
+  }, [])
+
+  const addJournalEntry = (entry) => {
+    const newEntry = {
+      ...entry,
+      id: `JRN-${String(157 + journal.length).padStart(4, '0')}`,
+    }
+    setJournal((prev) => [newEntry, ...prev])
+    return newEntry
   }
 
-  return { currentReport, loading, generateReport }
+  return { accounts, journal, customerLedgerData, supplierLedgerData, loading, addJournalEntry }
 }
