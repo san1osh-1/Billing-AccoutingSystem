@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '../../i18n/LanguageContext'
 import { Plus, Trash2 } from 'lucide-react'
 import Drawer from '../ui/Drawer'
 import Button from '../ui/Button'
@@ -10,6 +11,7 @@ import { calcLineTotal, VAT_RATE } from '../../utils/cart'
 const emptyLine = { productId: '', name: '', qty: 1, price: 0, discount: 0, vatApplicable: true }
 
 export default function PurchaseEntryDrawer({ open, onClose, onSubmit, suppliers, products }) {
+  const { t } = useTranslation()
   const [supplierId, setSupplierId] = useState('')
   const [invoiceNo, setInvoiceNo] = useState('')
   const [lines, setLines] = useState([{ ...emptyLine }])
@@ -54,9 +56,9 @@ export default function PurchaseEntryDrawer({ open, onClose, onSubmit, suppliers
 
   const validate = () => {
     const e = {}
-    if (!supplierId) e.supplier = 'Select a supplier'
-    if (!invoiceNo.trim()) e.invoice = 'Invoice number required'
-    if (lines.every((l) => !l.productId)) e.lines = 'Add at least one product'
+    if (!supplierId) e.supplier = t('required_supplier')
+    if (!invoiceNo.trim()) e.invoice = t('required_invoice_no')
+    if (lines.every((l) => !l.productId)) e.lines = t('require_one_product')
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -83,29 +85,29 @@ export default function PurchaseEntryDrawer({ open, onClose, onSubmit, suppliers
   }
 
   return (
-    <Drawer open={open} onClose={onClose} title="New Purchase Entry" size="xl"
+    <Drawer open={open} onClose={onClose} title={t('new_purchase_entry')} size="xl"
       footer={
         <div className="flex justify-end gap-2">
-          <Button variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Save Purchase</Button>
+          <Button variant="secondary" onClick={onClose}>{t('cancel')}</Button>
+          <Button onClick={handleSubmit}>{t('save_purchase')}</Button>
         </div>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Supplier info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Select label="Supplier" value={supplierId} onChange={(e) => setSupplierId(e.target.value)} error={errors.supplier} required>
-            <option value="">Select supplier</option>
+          <Select label={t('supplier')} value={supplierId} onChange={(e) => setSupplierId(e.target.value)} error={errors.supplier} required>
+            <option value="">{t('select_supplier')}</option>
             {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </Select>
-          <Input label="Supplier Invoice No" value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} error={errors.invoice} required placeholder="e.g. WDN-88421" />
+          <Input label={t('supplier_invoice_no')} value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} error={errors.invoice} required placeholder={t('enter_supplier_invoice')} />
         </div>
 
         {/* Line items */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium text-slate-700">Products</label>
-            <Button type="button" variant="ghost" size="sm" icon={Plus} onClick={addLine}>Add line</Button>
+            <label className="text-sm font-medium text-slate-700">{t('products')}</label>
+            <Button type="button" variant="ghost" size="sm" icon={Plus} onClick={addLine}>{t('add_line')}</Button>
           </div>
           {errors.lines && <p className="text-xs text-rose-600 mb-2">{errors.lines}</p>}
 
@@ -118,21 +120,21 @@ export default function PurchaseEntryDrawer({ open, onClose, onSubmit, suppliers
                     onChange={(e) => updateLine(idx, 'productId', e.target.value)}
                     className="w-full h-9 px-2 rounded-md border border-slate-200 bg-white text-sm focus:border-brand-500 focus:outline-none"
                   >
-                    <option value="">Select product</option>
+                    <option value="">{t('select_product')}</option>
                     {products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
                 <div className="col-span-4 md:col-span-2">
                   <input type="number" min="1" value={line.qty} onChange={(e) => updateLine(idx, 'qty', e.target.value)}
-                    placeholder="Qty" className="w-full h-9 px-2 rounded-md border border-slate-200 bg-white text-sm focus:border-brand-500 focus:outline-none" />
+                    placeholder={t('qty')} className="w-full h-9 px-2 rounded-md border border-slate-200 bg-white text-sm focus:border-brand-500 focus:outline-none" />
                 </div>
                 <div className="col-span-4 md:col-span-2">
                   <input type="number" min="0" step="0.01" value={line.price} onChange={(e) => updateLine(idx, 'price', e.target.value)}
-                    placeholder="Price" className="w-full h-9 px-2 rounded-md border border-slate-200 bg-white text-sm focus:border-brand-500 focus:outline-none" />
+                    placeholder={t('price')} className="w-full h-9 px-2 rounded-md border border-slate-200 bg-white text-sm focus:border-brand-500 focus:outline-none" />
                 </div>
                 <div className="col-span-3 md:col-span-2">
                   <input type="number" min="0" value={line.discount} onChange={(e) => updateLine(idx, 'discount', e.target.value)}
-                    placeholder="Disc." className="w-full h-9 px-2 rounded-md border border-slate-200 bg-white text-sm focus:border-brand-500 focus:outline-none" />
+                    placeholder={t('discount_short')} className="w-full h-9 px-2 rounded-md border border-slate-200 bg-white text-sm focus:border-brand-500 focus:outline-none" />
                 </div>
                 <div className="col-span-1 md:col-span-1 flex items-center justify-center text-sm font-semibold text-slate-900">
                   {formatCurrency(calcLineTotal(line.price, line.qty, line.discount, line.vatApplicable).total)}
@@ -150,29 +152,29 @@ export default function PurchaseEntryDrawer({ open, onClose, onSubmit, suppliers
 
         {/* Summary */}
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-1.5 text-sm">
-          <div className="flex justify-between text-slate-600"><span>Subtotal</span><span>{formatCurrency(totals.subtotal)}</span></div>
-          <div className="flex justify-between text-rose-600"><span>Discount</span><span>−{formatCurrency(totals.discount)}</span></div>
-          <div className="flex justify-between text-slate-600"><span>VAT ({VAT_RATE}%)</span><span>{formatCurrency(totals.vat)}</span></div>
+          <div className="flex justify-between text-slate-600"><span>{t('subtotal')}</span><span>{formatCurrency(totals.subtotal)}</span></div>
+          <div className="flex justify-between text-rose-600"><span>{t('discount')}</span><span>−{formatCurrency(totals.discount)}</span></div>
+          <div className="flex justify-between text-slate-600"><span>{t('vat')} ({VAT_RATE}%)</span><span>{formatCurrency(totals.vat)}</span></div>
           <div className="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-200">
-            <span>Grand Total</span><span>{formatCurrency(totals.grandTotal)}</span>
+            <span>{t('grand_total')}</span><span>{formatCurrency(totals.grandTotal)}</span>
           </div>
         </div>
 
         {/* Payment */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Select label="Payment Method" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-            <option value="cash">Cash</option>
-            <option value="bank">Bank</option>
-            <option value="qr">QR</option>
-            <option value="credit">Credit</option>
+          <Select label={t('payment_method')} value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
+            <option value="cash">{t('method_cash')}</option>
+            <option value="bank">{t('method_bank')}</option>
+            <option value="qr">{t('method_qr')}</option>
+            <option value="credit">{t('method_credit')}</option>
           </Select>
-          <Select label="Payment Status" value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value)}>
-            <option value="Paid">Paid</option>
-            <option value="Partial">Partial</option>
-            <option value="Due">Due</option>
+          <Select label={t('payment_status')} value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value)}>
+            <option value="Paid">{t('status_paid')}</option>
+            <option value="Partial">{t('status_partial')}</option>
+            <option value="Due">{t('status_due')}</option>
           </Select>
           {paymentStatus !== 'Paid' && (
-            <Input label="Amount Paid (Rs.)" type="number" min="0" value={amountPaid} onChange={(e) => setAmountPaid(e.target.value)} />
+            <Input label={t('amount_paid_rs')} type="number" min="0" value={amountPaid} onChange={(e) => setAmountPaid(e.target.value)} />
           )}
         </div>
       </form>

@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import Button from '../ui/Button'
-
-const methods = [
-  { key: 'cash', label: 'Cash', icon: '💵' },
-  { key: 'bank', label: 'Bank Transfer', icon: '🏦' },
-  { key: 'qr', label: 'QR Code', icon: '📱' },
-  { key: 'esewa', label: 'eSewa', icon: '🟣' },
-  { key: 'khalti', label: 'Khalti', icon: '🟪' },
-  { key: 'credit', label: 'Credit', icon: '📝' },
-]
+import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function PaymentMethodsSettings() {
+  const { t } = useTranslation()
+
+  const methods = [
+    { key: 'cash', label: t('method_cash'), icon: '💵' },
+    { key: 'bank', label: t('bank_transfer'), icon: '🏦' },
+    { key: 'qr', label: t('qr_code'), icon: '📱' },
+    { key: 'esewa', label: t('method_esewa'), icon: '🟣' },
+    { key: 'khalti', label: t('method_khalti'), icon: '🟪' },
+    { key: 'credit', label: t('method_credit'), icon: '📝' },
+  ]
   const [enabled, setEnabled] = useState(['cash', 'bank', 'qr', 'esewa', 'khalti', 'credit'])
 
   const toggle = (key) => {
@@ -20,12 +22,12 @@ export default function PaymentMethodsSettings() {
   }
 
   const handleSave = () => {
-    alert('Payment methods saved!')
+    alert(t('payment_methods_saved'))
   }
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-slate-600">Enable or disable payment methods for sales and purchases.</p>
+      <p className="text-sm text-slate-600">{t('enable_disable_payment_methods')}</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {methods.map((m) => {
           const isOn = enabled.includes(m.key)
@@ -46,7 +48,7 @@ export default function PaymentMethodsSettings() {
         })}
       </div>
       <div className="pt-4 border-t border-slate-200">
-        <Button onClick={handleSave}>Save Changes</Button>
+        <Button onClick={handleSave}>{t('save_changes')}</Button>
       </div>
     </div>
   )

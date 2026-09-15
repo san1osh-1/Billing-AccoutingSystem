@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { Search, Plus, Package } from 'lucide-react'
 import { categories } from '../../data/products'
 import { formatCurrency } from '../../utils/format'
+import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function ProductGrid({ products, onAddToCart }) {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('')
 
@@ -26,7 +28,7 @@ export default function ProductGrid({ products, onAddToCart }) {
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Scan barcode or search products..."
+            placeholder={t('pos_scan_placeholder')}
             className="w-full h-10 pl-10 pr-4 rounded-lg border border-slate-200 bg-slate-50 text-sm focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none"
           />
         </div>
@@ -38,7 +40,7 @@ export default function ProductGrid({ products, onAddToCart }) {
               !category ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
-            All
+            {t('all')}
           </button>
           {categories.map((c) => (
             <button
@@ -59,8 +61,8 @@ export default function ProductGrid({ products, onAddToCart }) {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center py-12">
             <Package className="w-12 h-12 text-slate-300 mb-3" />
-            <p className="text-sm font-medium text-slate-600">No products found</p>
-            <p className="text-xs text-slate-500 mt-1">Try a different search or category</p>
+            <p className="text-sm font-medium text-slate-600">{t('no_products')}</p>
+            <p className="text-xs text-slate-500 mt-1">{t('try_different_search')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -78,7 +80,7 @@ export default function ProductGrid({ products, onAddToCart }) {
                 <div className="flex items-end justify-between mt-2">
                   <div>
                     <div className="text-sm font-bold text-brand-700">{formatCurrency(p.sellingPrice)}</div>
-                    <div className="text-[10px] text-slate-500">Stock: {p.stock}</div>
+                    <div className="text-[10px] text-slate-500">{t('stock')}: {p.stock}</div>
                   </div>
                   <div className="w-7 h-7 rounded-full bg-brand-50 text-brand-700 flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white transition">
                     <Plus className="w-4 h-4" />

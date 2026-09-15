@@ -8,15 +8,17 @@ import ReportFilters from '../Components/reports/ReportFilters'
 import ReportTable from '../Components/reports/ReportTable'
 import ReportActions from '../Components/reports/ReportActions'
 import LoadingState from '../Components/ui/LoadingState'
+import { useTranslation } from '../i18n/LanguageContext'
 
 const reportTypes = [
-  { key: 'profit-loss', label: 'Profit & Loss', icon: TrendingUp, description: 'Revenue, expenses, and net profit' },
-  { key: 'balance-sheet', label: 'Balance Sheet', icon: PieChart, description: 'Assets, liabilities, and equity' },
-  { key: 'cash-flow', label: 'Cash Flow', icon: DollarSign, description: 'Cash inflows and outflows' },
-  { key: 'trial-balance', label: 'Trial Balance', icon: Calculator, description: 'All account balances' },
+  { key: 'profit-loss', labelKey: 'profit_loss', icon: TrendingUp, descKey: 'profit_loss_desc' },
+  { key: 'balance-sheet', labelKey: 'balance_sheet', icon: PieChart, descKey: 'balance_sheet_desc' },
+  { key: 'cash-flow', labelKey: 'cash_flow', icon: DollarSign, descKey: 'cash_flow_desc' },
+  { key: 'trial-balance', labelKey: 'trial_balance', icon: Calculator, descKey: 'trial_balance_desc' },
 ]
 
 export default function Reports() {
+  const { t } = useTranslation()
   const [selectedReport, setSelectedReport] = useState('profit-loss')
   const [startDate, setStartDate] = useState('2026-01-01')
   const [endDate, setEndDate] = useState('2026-09-15')
@@ -27,14 +29,14 @@ export default function Reports() {
   }
 
   const handlePrint = () => window.print()
-  const handleExportPDF = () => alert('PDF export coming soon!')
-  const handleExportExcel = () => alert('Excel export coming soon!')
+  const handleExportPDF = () => alert(t('coming_soon'))
+  const handleExportExcel = () => alert(t('coming_soon'))
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Reports"
-        subtitle="Generate financial reports and analytics"
+        title={t('nav_reports')}
+        subtitle={t('reports_page_subtitle')}
       />
 
       {/* Report type selector */}
@@ -57,8 +59,8 @@ export default function Reports() {
               }`}>
                 <Icon className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-semibold text-slate-900">{r.label}</h3>
-              <p className="text-xs text-slate-500 mt-1">{r.description}</p>
+              <h3 className="text-sm font-semibold text-slate-900">{t(r.labelKey)}</h3>
+              <p className="text-xs text-slate-500 mt-1">{t(r.descKey)}</p>
             </button>
           )
         })}
@@ -99,7 +101,7 @@ export default function Reports() {
         <Card>
           <div className="text-center py-12">
             <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-sm font-medium text-slate-600">Select a report type and click "Generate Report"</p>
+            <p className="text-sm font-medium text-slate-600">{t('select_report_hint')}</p>
           </div>
         </Card>
       )}

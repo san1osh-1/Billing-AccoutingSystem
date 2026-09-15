@@ -1,6 +1,8 @@
 import { formatCurrency } from '../../utils/format'
+import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function ReportTable({ report }) {
+  const { t } = useTranslation()
   if (!report) return null
 
   return (
@@ -26,7 +28,7 @@ export default function ReportTable({ report }) {
                 </div>
               )}
               <div className={`px-6 py-3 border-t border-slate-200 flex justify-between ${section.isFinal ? 'text-base font-bold text-brand-700' : 'text-sm font-semibold text-slate-900'}`}>
-                <span>{section.isFinal ? section.title : 'Total'}</span>
+                <span>{section.isFinal ? section.title : t('total')}</span>
                 <span>{formatCurrency(section.total)}</span>
               </div>
             </div>
@@ -37,10 +39,10 @@ export default function ReportTable({ report }) {
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200 text-xs text-slate-600 uppercase">
-              <th className="text-left px-6 py-3 font-semibold">Code</th>
-              <th className="text-left px-6 py-3 font-semibold">Account Name</th>
-              <th className="text-right px-6 py-3 font-semibold">Debit</th>
-              <th className="text-right px-6 py-3 font-semibold">Credit</th>
+              <th className="text-left px-6 py-3 font-semibold">{t('account_code')}</th>
+              <th className="text-left px-6 py-3 font-semibold">{t('account_name')}</th>
+              <th className="text-right px-6 py-3 font-semibold">{t('debit')}</th>
+              <th className="text-right px-6 py-3 font-semibold">{t('credit')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -55,7 +57,7 @@ export default function ReportTable({ report }) {
           </tbody>
           <tfoot>
             <tr className="bg-slate-50 border-t-2 border-slate-300">
-              <td colSpan={2} className="px-6 py-3 font-bold text-slate-900">Totals</td>
+              <td colSpan={2} className="px-6 py-3 font-bold text-slate-900">{t('totals')}</td>
               <td className="px-6 py-3 text-right font-bold text-slate-900">{formatCurrency(report.totalDebit)}</td>
               <td className="px-6 py-3 text-right font-bold text-slate-900">{formatCurrency(report.totalCredit)}</td>
             </tr>

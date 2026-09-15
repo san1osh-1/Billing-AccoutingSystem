@@ -9,61 +9,63 @@ import LedgerView from '../Components/accounting/LedgerView'
 import DataTable from '../Components/ui/DataTable'
 import Badge from '../Components/ui/Badge'
 import { formatCurrency, formatDate } from '../utils/format'
+import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Accounting() {
+  const { t } = useTranslation()
   const { accounts, journal, customerLedgerData, supplierLedgerData, loading, addJournalEntry } = useAccounting()
   const [tab, setTab] = useState('chart')
   const [journalDrawerOpen, setJournalDrawerOpen] = useState(false)
 
   const journalColumns = [
-    { key: 'id', label: 'Entry #', render: (r) => <span className="font-mono text-xs font-semibold text-brand-700">{r.id}</span> },
-    { key: 'date', label: 'Date', render: (r) => formatDate(r.date) },
-    { key: 'description', label: 'Description', render: (r) => <span className="font-medium text-slate-900">{r.description}</span> },
-    { key: 'reference', label: 'Reference', render: (r) => <span className="font-mono text-xs text-slate-600">{r.reference || '—'}</span> },
+    { key: 'id', label: t('entry_no'), render: (r) => <span className="font-mono text-xs font-semibold text-brand-700">{r.id}</span> },
+    { key: 'date', label: t('date'), render: (r) => formatDate(r.date) },
+    { key: 'description', label: t('description'), render: (r) => <span className="font-medium text-slate-900">{r.description}</span> },
+    { key: 'reference', label: t('reference'), render: (r) => <span className="font-mono text-xs text-slate-600">{r.reference || '—'}</span> },
     {
-      key: 'amount', label: 'Amount', align: 'right',
+      key: 'amount', label: t('amount'), align: 'right',
       render: (r) => {
         const total = r.lines.reduce((s, l) => s + l.debit, 0)
         return <span className="font-semibold">{formatCurrency(total)}</span>
       },
     },
     {
-      key: 'lines', label: 'Lines', align: 'center',
-      render: (r) => <Badge tone="info">{r.lines.length} lines</Badge>,
+      key: 'lines', label: t('lines'), align: 'center',
+      render: (r) => <Badge tone="info">{r.lines.length} {t('lines')}</Badge>,
     },
   ]
 
   const tabs = [
-    { key: 'chart', label: 'Chart of Accounts', icon: BookOpen },
-    { key: 'journal', label: 'Journal Entries', icon: FileText },
-    { key: 'customer', label: 'Customer Ledger', icon: Users },
-    { key: 'supplier', label: 'Supplier Ledger', icon: Truck },
+    { key: 'chart', label: t('chart_of_accounts'), icon: BookOpen },
+    { key: 'journal', label: t('journal_entries'), icon: FileText },
+    { key: 'customer', label: t('customer_ledger'), icon: Users },
+    { key: 'supplier', label: t('supplier_ledger'), icon: Truck },
   ]
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Accounting"
-        subtitle="Double-entry bookkeeping and financial ledgers"
+        title={t('nav_accounting')}
+        subtitle={t('accounting_subtitle')}
         action={tab === 'journal' && (
-          <Button icon={Plus} onClick={() => setJournalDrawerOpen(true)}>New Journal Entry</Button>
+          <Button icon={Plus} onClick={() => setJournalDrawerOpen(true)}>{t('new_journal_entry')}</Button>
         )}
       />
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-slate-200 overflow-x-auto scrollbar-thin">
-        {tabs.map((t) => {
-          const Icon = t.icon
+        {tabs.map((tabItem) => {
+          const Icon = tabItem.icon
           return (
             <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
+              key={tabItem.key}
+              onClick={() => setTab(tabItem.key)}
               className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition whitespace-nowrap ${
-                tab === t.key ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-600 hover:text-slate-900'
+                tab === tabItem.key ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
               <Icon className="w-4 h-4" />
-              {t.label}
+              {tabItem.label}
             </button>
           )
         })}
@@ -77,9 +79,9 @@ export default function Accounting() {
           columns={journalColumns}
           data={journal}
           loading={loading}
-          emptyTitle="No journal entries"
-          emptyDescription="Create your first journal entry to record financial transactions."
-          emptyAction={<Button onClick={() => setJournalDrawerOpen(true)}>New Journal Entry</Button>}
+          emptyTitle={t('no_journal_entries')}
+          emptyDescription={t('create_journal_hint')}
+          emptyAction={<Button onClick={() => setJournalDrawerOpen(true)}>{t('new_journal_entry')}</Button>}
         />
       )}
       

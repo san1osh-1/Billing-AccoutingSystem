@@ -5,6 +5,7 @@ import {
   BookOpen, FileBarChart, Shield, Settings, ChevronLeft, X,
 } from 'lucide-react'
 import { navigation } from '../../data/navigation'
+import { useTranslation } from '../../i18n/LanguageContext'
 
 const iconMap = {
   dashboard: LayoutDashboard, sales: ShoppingCart, customers: Users,
@@ -16,6 +17,7 @@ const iconMap = {
 
 export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
   const location = useLocation()
+  const { t } = useTranslation()
 
   return (
     <>
@@ -45,7 +47,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
             {(!collapsed || mobileOpen) && (
               <div className="min-w-0">
                 <div className="font-bold text-slate-900 truncate">HisaabKit</div>
-                <div className="text-[10px] text-slate-500 truncate">Nepal Business Suite</div>
+                <div className="text-[10px] text-slate-500 truncate">{t('nepal_business_suite')}</div>
               </div>
             )}
           </div>
@@ -70,6 +72,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
           <ul className="space-y-0.5">
             {navigation.map((item) => {
               const Icon = iconMap[item.key] || LayoutDashboard
+              const label = t(`nav_${item.key}`)
               const isActive = location.pathname === `/${item.key}` ||
                 (item.key === 'dashboard' && location.pathname === '/')
 
@@ -85,10 +88,10 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
                         ? 'bg-brand-50 text-brand-700'
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}
                     `}
-                    title={collapsed && !mobileOpen ? item.label : ''}
+                    title={collapsed && !mobileOpen ? label : ''}
                   >
                     <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-brand-600' : 'text-slate-500 group-hover:text-slate-700'}`} />
-                    {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
+                    {(!collapsed || mobileOpen) && <span className="truncate">{label}</span>}
                   </NavLink>
                 </li>
               )
@@ -105,7 +108,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
             {(!collapsed || mobileOpen) && (
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium text-slate-900 truncate">Ram Shrestha</div>
-                <div className="text-xs text-slate-500 truncate">Owner</div>
+                <div className="text-xs text-slate-500 truncate">{t('owner')}</div>
               </div>
             )}
           </div>

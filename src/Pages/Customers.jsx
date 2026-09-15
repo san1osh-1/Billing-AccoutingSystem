@@ -11,18 +11,22 @@ import CustomerFilters from '../Components/customer/CustomerFilters'
 import AddCustomerDrawer from '../Components/customer/AddCustomerDrawer'
 import CustomerDetailsDrawer from '../Components/customer/CustomerDetailsDrawer'
 import ConfirmModal from '../Components/ui/ConfirmModal'
+import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Customers() {
+  const { t } = useTranslation()
   const { customers, loading, filters, setFilters, kpis, addCustomer, updateCustomer, deleteCustomer } = useCustomers()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editing, setEditing] = useState(null)
   const [viewing, setViewing] = useState(null)
   const [deleting, setDeleting] = useState(null)
 
+  const statusKeys = { Active: 'status_active', Overdue: 'status_overdue' }
+
   const columns = [
     {
       key: 'name',
-      label: 'Customer',
+      label: t('customer'),
       render: (r) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xs font-bold">
@@ -37,24 +41,24 @@ export default function Customers() {
     },
     {
       key: 'email',
-      label: 'Email',
+      label: t('email'),
       render: (r) => <span className="text-slate-600">{r.email || '—'}</span>,
     },
     {
       key: 'totalPurchases',
-      label: 'Total Purchases',
+      label: t('total_purchases'),
       align: 'right',
       render: (r) => <span className="font-medium">{formatCurrency(r.totalPurchases)}</span>,
     },
     {
       key: 'paid',
-      label: 'Paid',
+      label: t('paid'),
       align: 'right',
       render: (r) => <span className="text-emerald-600">{formatCurrency(r.paid)}</span>,
     },
     {
       key: 'due',
-      label: 'Due',
+      label: t('due'),
       align: 'right',
       render: (r) => (
         <span className={`font-semibold ${r.due > 0 ? 'text-rose-600' : 'text-slate-500'}`}>
@@ -64,13 +68,13 @@ export default function Customers() {
     },
     {
       key: 'status',
-      label: 'Status',
+      label: t('status'),
       render: (r) => (
         <Badge
           tone={r.status === 'Active' ? 'success' : r.status === 'Overdue' ? 'danger' : 'neutral'}
           dot
         >
-          {r.status}
+          {t(statusKeys[r.status] || 'status_inactive')}
         </Badge>
       ),
     },
@@ -84,7 +88,7 @@ export default function Customers() {
           <button
             onClick={() => setViewing(r)}
             className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-            aria-label="View"
+            aria-label={t('view')}
           >
             <Eye className="w-4 h-4" />
           </button>
@@ -94,14 +98,14 @@ export default function Customers() {
               setDrawerOpen(true)
             }}
             className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-            aria-label="Edit"
+            aria-label={t('edit')}
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => setDeleting(r)}
             className="p-1.5 rounded-md text-slate-500 hover:bg-rose-50 hover:text-rose-600"
-            aria-label="Delete"
+            aria-label={t('delete')}
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -113,8 +117,8 @@ export default function Customers() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Customers"
-        subtitle="Manage customers, receivables and ledger"
+        title={t('customers')}
+        subtitle={t('customers_page_subtitle')}
         action={
           <Button
             icon={Plus}
@@ -123,7 +127,7 @@ export default function Customers() {
               setDrawerOpen(true)
             }}
           >
-            Add Customer
+            {t('add_customer')}
           </Button>
         }
       />
@@ -131,25 +135,25 @@ export default function Customers() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
-          title="Total Customers"
+          title={t('total_customers')}
           value={String(kpis.total)}
           icon={Users}
           tone="brand"
         />
         <KpiCard
-          title="Active Customers"
+          title={t('active_customers')}
           value={String(kpis.active)}
           icon={UserCheck}
           tone="emerald"
         />
         <KpiCard
-          title="Total Receivable"
+          title={t('receivable')}
           value={formatCurrency(kpis.receivable)}
           icon={Wallet}
           tone="amber"
         />
         <KpiCard
-          title="Overdue Amount"
+          title={t('overdue')}
           value={formatCurrency(kpis.overdue)}
           icon={AlertTriangle}
           tone="rose"
@@ -165,10 +169,10 @@ export default function Customers() {
         data={customers}
         loading={loading}
         onRowClick={(r) => setViewing(r)}
-        emptyTitle="No customers yet"
-        emptyDescription="Add your first customer to start tracking sales and receivables."
+        emptyTitle={t('no_customers')}
+        emptyDescription={t('no_customers_hint')}
         emptyAction={
-          <Button onClick={() => setDrawerOpen(true)}>Add Customer</Button>
+          <Button onClick={() => setDrawerOpen(true)}>{t('add_customer')}</Button>
         }
       />
 
@@ -200,8 +204,8 @@ export default function Customers() {
           deleteCustomer(deleting.id)
           setDeleting(null)
         }}
-        title="Delete Customer?"
-        description={`Are you sure you want to delete "${deleting?.name}"? All associated records will be removed.`}
+        title={t('are_you_sure')}
+        description={`${t('delete_customer_confirm')} "${deleting?.name}"`}
       />
     </div>
   )

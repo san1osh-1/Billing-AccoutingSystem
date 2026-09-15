@@ -1,15 +1,17 @@
 import { categories } from '../../data/products'
+import { useTranslation } from '../../i18n/LanguageContext'
 import FilterBar from '../ui/FilterBar'
 import Select from '../ui/Select'
 
 export default function ProductFilters({ filters, setFilters }) {
+  const { t } = useTranslation()
   const clear = () => setFilters({ search: '', category: '', stockStatus: '' })
 
   return (
     <FilterBar
       searchValue={filters.search}
       onSearchChange={(v) => setFilters({ ...filters, search: v })}
-      searchPlaceholder="Search by name or SKU..."
+      searchPlaceholder={t('search_name_sku')}
       onClear={clear}
     >
       <Select
@@ -17,7 +19,7 @@ export default function ProductFilters({ filters, setFilters }) {
         onChange={(e) => setFilters({ ...filters, category: e.target.value })}
         className="w-44"
       >
-        <option value="">All Categories</option>
+        <option value="">{t('category_all')}</option>
         {categories.map((c) => <option key={c} value={c}>{c}</option>)}
       </Select>
       <Select
@@ -25,11 +27,11 @@ export default function ProductFilters({ filters, setFilters }) {
         onChange={(e) => setFilters({ ...filters, stockStatus: e.target.value })}
         className="w-44"
       >
-        <option value="">All Stock</option>
-        <option value="ok">In Stock</option>
-        <option value="low">Low Stock</option>
-        <option value="critical">Critical</option>
-        <option value="out">Out of Stock</option>
+        <option value="">{t('all_stock')}</option>
+        <option value="ok">{t('status_in_stock')}</option>
+        <option value="low">{t('low_stock')}</option>
+        <option value="critical">{t('status_critical')}</option>
+        <option value="out">{t('status_out_of_stock')}</option>
       </Select>
     </FilterBar>
   )

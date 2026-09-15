@@ -1,7 +1,9 @@
 import { formatCurrency } from '../../utils/format'
 import Badge from '../ui/Badge'
+import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function ChartOfAccounts({ accounts }) {
+  const { t } = useTranslation()
   const grouped = accounts.reduce((acc, account) => {
     if (!acc[account.type]) acc[account.type] = []
     acc[account.type].push(account)
@@ -37,9 +39,9 @@ export default function ChartOfAccounts({ accounts }) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-xs text-slate-600 uppercase">
-                    <th className="text-left px-4 py-2 font-semibold">Code</th>
-                    <th className="text-left px-4 py-2 font-semibold">Account Name</th>
-                    <th className="text-right px-4 py-2 font-semibold">Balance</th>
+                    <th className="text-left px-4 py-2 font-semibold">{t('account_code')}</th>
+                    <th className="text-left px-4 py-2 font-semibold">{t('account_name')}</th>
+                    <th className="text-right px-4 py-2 font-semibold">{t('balance')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">

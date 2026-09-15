@@ -1,9 +1,11 @@
 import { formatCurrency, formatDate } from '../../utils/format'
 import Badge from '../ui/Badge'
+import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function LedgerView({ ledger, type = 'customer' }) {
+  const { t } = useTranslation()
   if (!ledger || ledger.length === 0) {
-    return <p className="text-sm text-slate-500 py-8 text-center">No ledger entries found.</p>
+    return <p className="text-sm text-slate-500 py-8 text-center">{t('no_ledger_entries')}</p>
   }
 
   return (
@@ -18,24 +20,24 @@ export default function LedgerView({ ledger, type = 'customer' }) {
               <div>
                 <h4 className="text-sm font-semibold text-slate-900">{party[`${type}Name`]}</h4>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  {party.transactions.length} transaction{party.transactions.length !== 1 ? 's' : ''}
+                  {party.transactions.length} {party.transactions.length !== 1 ? t('transactions') : t('transaction')}
                 </p>
               </div>
               {hasBalance && (
                 <Badge tone={finalBalance > 0 ? 'warning' : 'success'}>
-                  Balance: {formatCurrency(Math.abs(finalBalance))}
+                  {t('balance')}: {formatCurrency(Math.abs(finalBalance))}
                 </Badge>
               )}
             </div>
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-white border-b border-slate-200 text-xs text-slate-600 uppercase">
-                  <th className="text-left px-4 py-2 font-semibold">Date</th>
-                  <th className="text-left px-4 py-2 font-semibold">Reference</th>
-                  <th className="text-left px-4 py-2 font-semibold">Description</th>
-                  <th className="text-right px-4 py-2 font-semibold">Debit</th>
-                  <th className="text-right px-4 py-2 font-semibold">Credit</th>
-                  <th className="text-right px-4 py-2 font-semibold">Balance</th>
+                  <th className="text-left px-4 py-2 font-semibold">{t('date')}</th>
+                  <th className="text-left px-4 py-2 font-semibold">{t('reference')}</th>
+                  <th className="text-left px-4 py-2 font-semibold">{t('description')}</th>
+                  <th className="text-right px-4 py-2 font-semibold">{t('debit')}</th>
+                  <th className="text-right px-4 py-2 font-semibold">{t('credit')}</th>
+                  <th className="text-right px-4 py-2 font-semibold">{t('balance')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

@@ -2,12 +2,14 @@ import { Minus, Plus, Trash2, User, ShoppingBag } from 'lucide-react'
 import { calcCartTotals, paymentMethods } from '../../utils/cart'
 import { formatCurrency } from '../../utils/format'
 import Button from '../ui/Button'
+import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function CartPanel({
   cart, customers, selectedCustomerId, setSelectedCustomerId,
   extraDiscount, setExtraDiscount, paymentMethod, setPaymentMethod,
   onUpdateQty, onRemove, onCompleteSale, onClear,
 }) {
+  const { t } = useTranslation()
   const totals = calcCartTotals(cart, extraDiscount)
   const canComplete = cart.length > 0 && paymentMethod &&
     (paymentMethod !== 'credit' || selectedCustomerId)
@@ -19,11 +21,11 @@ export default function CartPanel({
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-brand-600" />
-            Current Sale
+            {t('current_sale')}
           </h3>
           {cart.length > 0 && (
             <button onClick={onClear} className="text-xs text-rose-600 hover:text-rose-700 font-medium">
-              Clear all
+              {t('clear_all')}
             </button>
           )}
         </div>
@@ -34,7 +36,7 @@ export default function CartPanel({
             onChange={(e) => setSelectedCustomerId(e.target.value)}
             className="w-full h-10 pl-10 pr-3 rounded-lg border border-slate-200 bg-white text-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none"
           >
-            <option value="">Walk-in Customer</option>
+            <option value="">{t('walk_in_customer')}</option>
             {customers.map((c) => (
               <option key={c.id} value={c.id}>{c.name} — {c.phone}</option>
             ))}
@@ -49,8 +51,8 @@ export default function CartPanel({
             <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center mb-3">
               <ShoppingBag className="w-6 h-6 text-slate-400" />
             </div>
-            <p className="text-sm font-medium text-slate-600">Cart is empty</p>
-            <p className="text-xs text-slate-500 mt-1">Add products to start a sale</p>
+            <p className="text-sm font-medium text-slate-600">{t('cart_empty')}</p>
+            <p className="text-xs text-slate-500 mt-1">{t('add_products_start_sale')}</p>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
@@ -81,7 +83,7 @@ export default function CartPanel({
                       onClick={() => onUpdateQty(item.id, item.quantity + 1)}
                       disabled={item.quantity >= item.maxStock}
                       className="w-7 h-7 rounded flex items-center justify-center text-slate-600 hover:bg-white disabled:opacity-40"
-                      title={item.quantity >= item.maxStock ? 'Max stock reached' : ''}
+                      title={item.quantity >= item.maxStock ? t('max_stock_reached') : ''}
                     >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
@@ -89,7 +91,7 @@ export default function CartPanel({
                   <button
                     onClick={() => onRemove(item.id)}
                     className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50"
-                    aria-label="Remove item"
+                    aria-label={t('remove_item')}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -105,28 +107,28 @@ export default function CartPanel({
         <div className="border-t border-slate-200 bg-slate-50/50 p-4 space-y-3">
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between text-slate-600">
-              <span>Subtotal</span>
+              <span>{t('subtotal')}</span>
               <span>{formatCurrency(totals.subtotal)}</span>
             </div>
             {totals.totalDiscount > 0 && (
               <div className="flex justify-between text-rose-600">
-                <span>Discount</span>
+                <span>{t('discount')}</span>
                 <span>−{formatCurrency(totals.totalDiscount)}</span>
               </div>
             )}
             <div className="flex justify-between text-slate-600">
-              <span>VAT (13%)</span>
+              <span>{t('vat_13')}</span>
               <span>{formatCurrency(totals.vat)}</span>
             </div>
             <div className="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-200">
-              <span>Grand Total</span>
+              <span>{t('grand_total')}</span>
               <span>{formatCurrency(totals.grandTotal)}</span>
             </div>
           </div>
 
           {/* Discount input */}
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-1 block">Extra Discount (Rs.)</label>
+            <label className="text-xs font-medium text-slate-600 mb-1 block">{t('extra_discount')}</label>
             <input
               type="number"
               min="0"
@@ -138,7 +140,7 @@ export default function CartPanel({
 
           {/* Payment methods */}
           <div>
-            <label className="text-xs font-medium text-slate-600 mb-2 block">Payment Method</label>
+            <label className="text-xs font-medium text-slate-600 mb-2 block">{t('payment_method')}</label>
             <div className="grid grid-cols-3 gap-1.5">
               {paymentMethods.map((m) => (
                 <button
@@ -151,12 +153,12 @@ export default function CartPanel({
                   }`}
                 >
                   <span className="mr-1">{m.icon}</span>
-                  {m.label}
+                  {t('method_' + m.key)}
                 </button>
               ))}
             </div>
             {paymentMethod === 'credit' && !selectedCustomerId && (
-              <p className="text-xs text-rose-600 mt-2">⚠ Select a customer for credit sales</p>
+              <p className="text-xs text-rose-600 mt-2">⚠ {t('credit_customer_warning')}</p>
             )}
           </div>
 
@@ -166,7 +168,7 @@ export default function CartPanel({
             className="w-full"
             size="lg"
           >
-            Complete Sale — {formatCurrency(totals.grandTotal)}
+            {t('complete_sale')} — {formatCurrency(totals.grandTotal)}
           </Button>
         </div>
       )}

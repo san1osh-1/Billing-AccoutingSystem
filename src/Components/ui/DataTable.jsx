@@ -3,14 +3,15 @@ import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import EmptyState from './EmptyState'
 import Pagination from './Pagination'
 import LoadingState from './LoadingState'
+import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function DataTable({
   columns, data, keyField = 'id', onRowClick,
   sortable = true, pageSize: initialPageSize = 10,
-  loading = false, emptyTitle = 'No records found',
-  emptyDescription = 'Try adjusting your filters or add a new record.',
+  loading = false, emptyTitle, emptyDescription,
   emptyAction,
 }) {
+  const { t } = useTranslation()
   const [sortKey, setSortKey] = useState(null)
   const [sortDir, setSortDir] = useState('asc')
   const [page, setPage] = useState(1)
@@ -54,7 +55,11 @@ export default function DataTable({
   if (!data || data.length === 0) {
     return (
       <div className="bg-white border border-slate-200 rounded-xl">
-        <EmptyState title={emptyTitle} description={emptyDescription} action={emptyAction} />
+        <EmptyState
+          title={emptyTitle || t('no_records_found')}
+          description={emptyDescription || t('adjust_filters_hint')}
+          action={emptyAction}
+        />
       </div>
     )
   }

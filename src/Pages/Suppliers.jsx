@@ -11,8 +11,10 @@ import SupplierFilters from '../Components/suppliers/SupplierFilters'
 import AddSupplierDrawer from '../Components/suppliers/AddSupplierDrawer'
 import SupplierDetailsDrawer from '../Components/suppliers/SupplierDetailsDrawer'
 import ConfirmModal from '../Components/ui/ConfirmModal'
+import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Suppliers() {
+  const { t } = useTranslation()
   const { suppliers, loading, filters, setFilters, kpis, addSupplier, updateSupplier, deleteSupplier } = useSuppliers()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -21,7 +23,7 @@ export default function Suppliers() {
 
   const columns = [
     {
-      key: 'name', label: 'Supplier',
+      key: 'name', label: t('supplier'),
       render: (r) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center text-xs font-bold">
@@ -34,21 +36,21 @@ export default function Suppliers() {
         </div>
       ),
     },
-    { key: 'email', label: 'Email', render: (r) => <span className="text-slate-600">{r.email || '—'}</span> },
-    { key: 'totalPurchases', label: 'Total Purchases', align: 'right', render: (r) => <span className="font-medium">{formatCurrency(r.totalPurchases)}</span> },
-    { key: 'paid', label: 'Paid', align: 'right', render: (r) => <span className="text-emerald-600">{formatCurrency(r.paid)}</span> },
-    { key: 'due', label: 'Payable', align: 'right', render: (r) => <span className={`font-semibold ${r.due > 0 ? 'text-rose-600' : 'text-slate-500'}`}>{formatCurrency(r.due)}</span> },
+    { key: 'email', label: t('email'), render: (r) => <span className="text-slate-600">{r.email || '—'}</span> },
+    { key: 'totalPurchases', label: t('total_purchases'), align: 'right', render: (r) => <span className="font-medium">{formatCurrency(r.totalPurchases)}</span> },
+    { key: 'paid', label: t('paid'), align: 'right', render: (r) => <span className="text-emerald-600">{formatCurrency(r.paid)}</span> },
+    { key: 'due', label: t('payable'), align: 'right', render: (r) => <span className={`font-semibold ${r.due > 0 ? 'text-rose-600' : 'text-slate-500'}`}>{formatCurrency(r.due)}</span> },
     {
-      key: 'status', label: 'Status',
-      render: (r) => <Badge tone={r.status === 'Active' ? 'success' : 'neutral'} dot>{r.status}</Badge>,
+      key: 'status', label: t('status'),
+      render: (r) => <Badge tone={r.status === 'Active' ? 'success' : 'neutral'} dot>{t(r.status === 'Active' ? 'status_active' : 'status_inactive')}</Badge>,
     },
     {
       key: 'actions', label: '', sortable: false, align: 'right',
       render: (r) => (
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-          <button onClick={() => setViewing(r)} className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-900" aria-label="View"><Eye className="w-4 h-4" /></button>
-          <button onClick={() => { setEditing(r); setDrawerOpen(true) }} className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-900" aria-label="Edit"><Edit2 className="w-4 h-4" /></button>
-          <button onClick={() => setDeleting(r)} className="p-1.5 rounded-md text-slate-500 hover:bg-rose-50 hover:text-rose-600" aria-label="Delete"><Trash2 className="w-4 h-4" /></button>
+          <button onClick={() => setViewing(r)} className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-900" aria-label={t('view')}><Eye className="w-4 h-4" /></button>
+          <button onClick={() => { setEditing(r); setDrawerOpen(true) }} className="p-1.5 rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-900" aria-label={t('edit')}><Edit2 className="w-4 h-4" /></button>
+          <button onClick={() => setDeleting(r)} className="p-1.5 rounded-md text-slate-500 hover:bg-rose-50 hover:text-rose-600" aria-label={t('delete')}><Trash2 className="w-4 h-4" /></button>
         </div>
       ),
     },
@@ -57,16 +59,16 @@ export default function Suppliers() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Suppliers"
-        subtitle="Manage suppliers, payables and purchase ledger"
-        action={<Button icon={Plus} onClick={() => { setEditing(null); setDrawerOpen(true) }}>Add Supplier</Button>}
+        title={t('suppliers')}
+        subtitle={t('suppliers_page_subtitle')}
+        action={<Button icon={Plus} onClick={() => { setEditing(null); setDrawerOpen(true) }}>{t('add_supplier')}</Button>}
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard title="Total Suppliers" value={String(kpis.total)} icon={Truck} tone="brand" />
-        <KpiCard title="Active Suppliers" value={String(kpis.active)} icon={CheckCircle} tone="emerald" />
-        <KpiCard title="Total Payable" value={formatCurrency(kpis.payable)} icon={Wallet} tone="amber" />
-        <KpiCard title="Overdue Payable" value={formatCurrency(kpis.overdue)} icon={AlertTriangle} tone="rose" />
+        <KpiCard title={t('total_suppliers')} value={String(kpis.total)} icon={Truck} tone="brand" />
+        <KpiCard title={t('active_suppliers')} value={String(kpis.active)} icon={CheckCircle} tone="emerald" />
+        <KpiCard title={t('total_payable')} value={formatCurrency(kpis.payable)} icon={Wallet} tone="amber" />
+        <KpiCard title={t('overdue_payable')} value={formatCurrency(kpis.overdue)} icon={AlertTriangle} tone="rose" />
       </div>
 
       <SupplierFilters filters={filters} setFilters={setFilters} />
@@ -76,9 +78,9 @@ export default function Suppliers() {
         data={suppliers}
         loading={loading}
         onRowClick={(r) => setViewing(r)}
-        emptyTitle="No suppliers yet"
-        emptyDescription="Add your first supplier to start tracking purchases."
-        emptyAction={<Button onClick={() => setDrawerOpen(true)}>Add Supplier</Button>}
+        emptyTitle={t('no_suppliers')}
+        emptyDescription={t('no_suppliers_hint')}
+        emptyAction={<Button onClick={() => setDrawerOpen(true)}>{t('add_supplier')}</Button>}
       />
 
       <AddSupplierDrawer
@@ -94,8 +96,8 @@ export default function Suppliers() {
         open={Boolean(deleting)}
         onClose={() => setDeleting(null)}
         onConfirm={() => { deleteSupplier(deleting.id); setDeleting(null) }}
-        title="Delete Supplier?"
-        description={`Are you sure you want to delete "${deleting?.name}"? This action cannot be undone.`}
+        title={t('are_you_sure')}
+        description={`${t('delete_supplier_confirm')} "${deleting?.name}"`}
       />
     </div>
   )

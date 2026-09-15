@@ -3,8 +3,10 @@ import Drawer from '../ui/Drawer'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Select from '../ui/Select'
+import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function RecordPaymentDrawer({ open, onClose, onSubmit, customers, suppliers }) {
+  const { t } = useTranslation()
   const [type, setType] = useState('received')
   const [partyId, setPartyId] = useState('')
   const [amount, setAmount] = useState('')
@@ -23,8 +25,8 @@ export default function RecordPaymentDrawer({ open, onClose, onSubmit, customers
 
   const validate = () => {
     const e = {}
-    if (!partyId) e.party = 'Select a party'
-    if (!amount || Number(amount) <= 0) e.amount = 'Enter a valid amount'
+    if (!partyId) e.party = t('required_party')
+    if (!amount || Number(amount) <= 0) e.amount = t('valid_amount')
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -47,11 +49,11 @@ export default function RecordPaymentDrawer({ open, onClose, onSubmit, customers
   }
 
   return (
-    <Drawer open={open} onClose={onClose} title="Record Payment" size="md"
+    <Drawer open={open} onClose={onClose} title={t('record_payment')} size="md"
       footer={
         <div className="flex justify-end gap-2">
-          <Button variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Record Payment</Button>
+          <Button variant="secondary" onClick={onClose}>{t('cancel')}</Button>
+          <Button onClick={handleSubmit}>{t('record_payment')}</Button>
         </div>
       }
     >
@@ -59,11 +61,11 @@ export default function RecordPaymentDrawer({ open, onClose, onSubmit, customers
         <div className="grid grid-cols-2 gap-2">
           <button type="button" onClick={() => { setType('received'); setPartyId('') }}
             className={`h-10 rounded-lg text-sm font-medium transition border ${type === 'received' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-white text-slate-700 border-slate-200'}`}>
-            ↓ Received
+            {t('received')}
           </button>
           <button type="button" onClick={() => { setType('made'); setPartyId('') }}
             className={`h-10 rounded-lg text-sm font-medium transition border ${type === 'made' ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-white text-slate-700 border-slate-200'}`}>
-            ↑ Made
+            {t('made')}
           </button>
         </div>
 

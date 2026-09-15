@@ -15,28 +15,51 @@ import {
   kpis, salesProfitChart, lowStockProducts, topSelling, recentTransactions,
 } from '../data/dashboard'
 import { formatCurrency } from '../utils/format'
+import { useTranslation } from '../i18n/LanguageContext'
 
-const dateRanges = ['Today', 'This Week', 'This Month', 'This Year', 'Custom']
+const dateRanges = [
+  { key: 'today', label: 'Today' },
+  { key: 'this_week', label: 'This Week' },
+  { key: 'this_month', label: 'This Month' },
+  { key: 'this_year', label: 'This Year' },
+  { key: 'custom', label: 'Custom' },
+]
+
+const kpiTitleMap = {
+  'Total Sales': 'total_sales',
+  'Total Purchases': 'total_purchases',
+  'Total Expenses': 'total_expenses',
+  'Net Profit': 'net_profit',
+}
+
+const statusKeys = {
+  Critical: 'status_critical',
+  Low: 'status_low',
+  Paid: 'status_paid',
+  Due: 'status_due',
+  Partial: 'status_partial',
+}
 
 export default function Dashboard() {
-  const [range, setRange] = useState('This Month')
+  const { t } = useTranslation()
+  const [range, setRange] = useState('this_month')
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Dashboard"
-        subtitle="Overview of your business performance"
+        title={t('dashboard')}
+        subtitle={t('dashboard_subtitle')}
         action={
           <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg p-1">
             {dateRanges.map((r) => (
               <button
-                key={r}
-                onClick={() => setRange(r)}
+                key={r.key}
+                onClick={() => setRange(r.key)}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
-                  range === r ? 'bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50'
+                  range === r.key ? 'bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50'
                 }`}
               >
-                {r}
+                {t(r.key)}
               </button>
             ))}
           </div>
@@ -48,7 +71,7 @@ export default function Dashboard() {
         {kpis.map((k) => (
           <KpiCard
             key={k.title}
-            title={k.title}
+            title={t(kpiTitleMap[k.title] || k.title)}
             value={k.value}
             change={k.change}
             trend={k.trend}
@@ -64,17 +87,17 @@ export default function Dashboard() {
       {/* Chart */}
       <Card>
         <CardHeader
-          title="Sales & Profit"
-          subtitle="Nepali fiscal months (Bikram Sambat)"
+          title={t('sales_profit')}
+          subtitle={t('fiscal_months_note')}
           action={
             <div className="flex items-center gap-4 text-xs">
               <span className="inline-flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-sm bg-brand-500"></span>
-                <span className="text-slate-600">Sales</span>
+                <span className="text-slate-600">{t('sales_legend')}</span>
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-sm bg-emerald-300"></span>
-                <span className="text-slate-600">Profit</span>
+                <span className="text-slate-600">{t('profit_legend')}</span>
               </span>
             </div>
           }
@@ -113,19 +136,19 @@ export default function Dashboard() {
         {/* Low Stock */}
         <Card>
           <CardHeader
-            title="Low Stock Products"
-            subtitle="Items below minimum threshold"
-            action={<Button variant="secondary" size="sm">View all</Button>}
+            title={t('low_stock_products')}
+            subtitle={t('items_below_threshold')}
+            action={<Button variant="secondary" size="sm">{t('view_all')}</Button>}
           />
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200 text-xs text-slate-600 uppercase">
-                  <th className="text-left py-2 font-semibold">Product</th>
-                  <th className="text-left py-2 font-semibold">SKU</th>
-                  <th className="text-right py-2 font-semibold">Stock</th>
-                  <th className="text-right py-2 font-semibold">Min</th>
-                  <th className="text-right py-2 font-semibold">Status</th>
+                  <th className="text-left py-2 font-semibold">{t('product')}</th>
+                  <th className="text-left py-2 font-semibold">{t('sku')}</th>
+                  <th className="text-right py-2 font-semibold">{t('stock')}</th>
+                  <th className="text-right py-2 font-semibold">{t('min')}</th>
+                  <th className="text-right py-2 font-semibold">{t('status')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -139,7 +162,7 @@ export default function Dashboard() {
                     <td className="py-2.5 text-right font-semibold">{p.current}</td>
                     <td className="py-2.5 text-right text-slate-500">{p.minimum}</td>
                     <td className="py-2.5 text-right">
-                      <Badge tone={p.status === 'Critical' ? 'danger' : 'warning'}>{p.status}</Badge>
+                      <Badge tone={p.status === 'Critical' ? 'danger' : 'warning'}>{t(statusKeys[p.status] || p.status)}</Badge>
                     </td>
                   </tr>
                 ))}
@@ -151,9 +174,9 @@ export default function Dashboard() {
         {/* Top Selling */}
         <Card>
           <CardHeader
-            title="Top Selling Products"
-            subtitle="By revenue"
-            action={<Button variant="secondary" size="sm">View all</Button>}
+            title={t('top_selling_products')}
+            subtitle={t('by_revenue')}
+            action={<Button variant="secondary" size="sm">{t('view_all')}</Button>}
           />
           <div className="space-y-3">
             {topSelling.map((p, i) => {
@@ -168,7 +191,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-right flex-shrink-0 ml-3">
                       <div className="text-sm font-semibold text-slate-900">{formatCurrency(p.revenue)}</div>
-                      <div className="text-xs text-slate-500">{p.units} units</div>
+                      <div className="text-xs text-slate-500">{p.units} {t('units_label')}</div>
                     </div>
                   </div>
                   <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -185,41 +208,41 @@ export default function Dashboard() {
       <Card padding={false}>
         <div className="p-5 flex items-start justify-between border-b border-slate-200">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Recent Transactions</h3>
-            <p className="text-xs text-slate-500 mt-0.5">Latest sales across all payment methods</p>
+            <h3 className="text-sm font-semibold text-slate-900">{t('recent_transactions')}</h3>
+            <p className="text-xs text-slate-500 mt-0.5">{t('latest_sales')}</p>
           </div>
-          <Button variant="secondary" size="sm">View all</Button>
+          <Button variant="secondary" size="sm">{t('view_all')}</Button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50/60 border-b border-slate-200 text-xs text-slate-600 uppercase">
-                <th className="text-left px-5 py-3 font-semibold">Invoice</th>
-                <th className="text-left px-5 py-3 font-semibold">Customer</th>
-                <th className="text-left px-5 py-3 font-semibold">Date</th>
-                <th className="text-left px-5 py-3 font-semibold">Method</th>
-                <th className="text-right px-5 py-3 font-semibold">Amount</th>
-                <th className="text-right px-5 py-3 font-semibold">Status</th>
+                <th className="text-left px-5 py-3 font-semibold">{t('invoice')}</th>
+                <th className="text-left px-5 py-3 font-semibold">{t('customer')}</th>
+                <th className="text-left px-5 py-3 font-semibold">{t('date')}</th>
+                <th className="text-left px-5 py-3 font-semibold">{t('method')}</th>
+                <th className="text-right px-5 py-3 font-semibold">{t('amount')}</th>
+                <th className="text-right px-5 py-3 font-semibold">{t('status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {recentTransactions.map((t) => (
-                <tr key={t.id} className="text-slate-700 hover:bg-slate-50">
-                  <td className="px-5 py-3 font-mono text-xs font-semibold text-brand-700">{t.id}</td>
-                  <td className="px-5 py-3 font-medium text-slate-900">{t.customer}</td>
-                  <td className="px-5 py-3 text-slate-500">{t.date}</td>
+              {recentTransactions.map((tx) => (
+                <tr key={tx.id} className="text-slate-700 hover:bg-slate-50">
+                  <td className="px-5 py-3 font-mono text-xs font-semibold text-brand-700">{tx.id}</td>
+                  <td className="px-5 py-3 font-medium text-slate-900">{tx.customer}</td>
+                  <td className="px-5 py-3 text-slate-500">{tx.date}</td>
                   <td className="px-5 py-3">
                     <span className="inline-flex items-center gap-1.5 text-xs text-slate-600">
                       <span className="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
-                      {t.method}
+                      {tx.method}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-right font-semibold text-slate-900">{formatCurrency(t.amount)}</td>
+                  <td className="px-5 py-3 text-right font-semibold text-slate-900">{formatCurrency(tx.amount)}</td>
                   <td className="px-5 py-3 text-right">
                     <Badge
-                      tone={t.status === 'Paid' ? 'success' : t.status === 'Due' ? 'danger' : 'warning'}
+                      tone={tx.status === 'Paid' ? 'success' : tx.status === 'Due' ? 'danger' : 'warning'}
                     >
-                      {t.status}
+                      {t(statusKeys[tx.status] || tx.status)}
                     </Badge>
                   </td>
                 </tr>

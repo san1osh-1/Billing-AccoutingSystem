@@ -10,8 +10,10 @@ import KpiCard from '../Components/ui/KpiCard'
 import ProductGrid from '../Components/pos/ProductGrid'
 import CartPanel from '../Components/pos/CartPanel'
 import InvoiceModal from '../Components/pos/InvoiceModal'
+import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Sales() {
+  const { t } = useTranslation()
   const { all: products, updateProduct } = useProducts()
   const { all: customers } = useCustomers()
   const { addSale, kpis } = useSales()
@@ -90,15 +92,15 @@ export default function Sales() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Sales / POS"
-        subtitle="Point of sale — create invoices and accept payments"
+        title={t('sales_pos')}
+        subtitle={t('sales_pos_subtitle')}
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <KpiCard title="Today's Sales" value={formatCurrency(kpis.total)} icon={ShoppingCart} tone="brand" />
-        <KpiCard title="Paid" value={formatCurrency(kpis.paid)} icon={Receipt} tone="emerald" />
-        <KpiCard title="Due" value={formatCurrency(kpis.due)} icon={Receipt} tone="rose" />
-        <KpiCard title="Invoices" value={String(kpis.count)} icon={Receipt} tone="sky" />
+        <KpiCard title={t('todays_sales')} value={formatCurrency(kpis.total)} icon={ShoppingCart} tone="brand" />
+        <KpiCard title={t('paid')} value={formatCurrency(kpis.paid)} icon={Receipt} tone="emerald" />
+        <KpiCard title={t('due')} value={formatCurrency(kpis.due)} icon={Receipt} tone="rose" />
+        <KpiCard title={t('invoices')} value={String(kpis.count)} icon={Receipt} tone="sky" />
       </div>
 
       {/* Mobile tabs */}
@@ -107,13 +109,13 @@ export default function Sales() {
           onClick={() => setCartTab(false)}
           className={`flex-1 py-2 rounded-md text-sm font-medium transition ${!cartTab ? 'bg-brand-50 text-brand-700' : 'text-slate-600'}`}
         >
-          Products
+          {t('products')}
         </button>
         <button
           onClick={() => setCartTab(true)}
           className={`flex-1 py-2 rounded-md text-sm font-medium transition relative ${cartTab ? 'bg-brand-50 text-brand-700' : 'text-slate-600'}`}
         >
-          Cart {cart.length > 0 && (
+          {t('cart')} {cart.length > 0 && (
             <span className="ml-1.5 inline-flex w-5 h-5 rounded-full bg-brand-600 text-white text-xs items-center justify-center">
               {cart.length}
             </span>

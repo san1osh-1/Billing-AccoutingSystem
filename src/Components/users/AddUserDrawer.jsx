@@ -3,10 +3,12 @@ import Drawer from '../ui/Drawer'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Select from '../ui/Select'
+import { useTranslation } from '../../i18n/LanguageContext'
 
 const emptyForm = { name: '', email: '', phone: '', roleId: '' }
 
 export default function AddUserDrawer({ open, onClose, onSubmit, roles, initial }) {
+  const { t } = useTranslation()
   const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState({})
   const [prevOpen, setPrevOpen] = useState(open)
@@ -20,11 +22,11 @@ export default function AddUserDrawer({ open, onClose, onSubmit, roles, initial 
 
   const validate = () => {
     const e = {}
-    if (!form.name.trim()) e.name = 'Name is required'
-    if (!form.email.trim()) e.email = 'Email is required'
-    else if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = 'Enter a valid email'
-    if (!form.phone.trim()) e.phone = 'Phone is required'
-    if (!form.roleId) e.roleId = 'Select a role'
+    if (!form.name.trim()) e.name = t('required_name')
+    if (!form.email.trim()) e.email = t('required_email')
+    else if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = t('invalid_email')
+    if (!form.phone.trim()) e.phone = t('required_phone')
+    if (!form.roleId) e.roleId = t('required_role')
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -39,20 +41,20 @@ export default function AddUserDrawer({ open, onClose, onSubmit, roles, initial 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
   return (
-    <Drawer open={open} onClose={onClose} title={isEdit ? 'Edit User' : 'Add New User'} size="md"
+    <Drawer open={open} onClose={onClose} title={isEdit ? t('edit_user') : t('add_new_user')} size="md"
       footer={
         <div className="flex justify-end gap-2">
-          <Button variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>{isEdit ? 'Save Changes' : 'Add User'}</Button>
+          <Button variant="secondary" onClick={onClose}>{t('cancel')}</Button>
+          <Button onClick={handleSubmit}>{isEdit ? t('save_changes') : t('add_user')}</Button>
         </div>
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <Input label="Full Name" value={form.name} onChange={set('name')} error={errors.name} required />
-        <Input label="Email" type="email" value={form.email} onChange={set('email')} error={errors.email} required />
-        <Input label="Phone" value={form.phone} onChange={set('phone')} error={errors.phone} required placeholder="98XXXXXXXX" />
-        <Select label="Role" value={form.roleId} onChange={set('roleId')} error={errors.roleId} required>
-          <option value="">Select role</option>
+        <Input label={t('full_name')} value={form.name} onChange={set('name')} error={errors.name} required />
+        <Input label={t('email')} type="email" value={form.email} onChange={set('email')} error={errors.email} required />
+        <Input label={t('phone')} value={form.phone} onChange={set('phone')} error={errors.phone} required placeholder="98XXXXXXXX" />
+        <Select label={t('role')} value={form.roleId} onChange={set('roleId')} error={errors.roleId} required>
+          <option value="">{t('select_role')}</option>
           {roles.map((r) => <option key={r.id} value={r.id}>{r.name} — {r.description}</option>)}
         </Select>
       </form>

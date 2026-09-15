@@ -1,7 +1,9 @@
 import { Search, X } from 'lucide-react'
 import Input from './Input'
+import { useTranslation } from '../../i18n/LanguageContext'
 
-export default function FilterBar({ children, searchValue, onSearchChange, searchPlaceholder = 'Search...', onClear }) {
+export default function FilterBar({ children, searchValue, onSearchChange, searchPlaceholder, onClear }) {
+  const { t } = useTranslation()
   const hasFilters = Boolean(searchValue) || Boolean(Array.isArray(children) ? children.some(Boolean) : children)
 
   return (
@@ -11,7 +13,7 @@ export default function FilterBar({ children, searchValue, onSearchChange, searc
           <Input
             value={searchValue}
             onChange={(e) => onSearchChange?.(e.target.value)}
-            placeholder={searchPlaceholder}
+            placeholder={searchPlaceholder || `${t('search')}...`}
             icon={Search}
           />
         </div>
@@ -23,7 +25,7 @@ export default function FilterBar({ children, searchValue, onSearchChange, searc
               className="inline-flex items-center gap-1.5 px-3 h-10 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 border border-slate-200"
             >
               <X className="w-3.5 h-3.5" />
-              Clear
+              {t('clear')}
             </button>
           )}
         </div>
