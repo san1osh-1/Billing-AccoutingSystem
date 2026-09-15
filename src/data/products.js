@@ -1,0 +1,29 @@
+export const categories = [
+  'Groceries', 'Beverages', 'Personal Care', 'Stationery',
+  'Electronics', 'Dairy', 'Snacks', 'Household',
+]
+
+export const units = ['Pcs', 'Kg', 'Ltr', 'Pkt', 'Box', 'Dzn', 'Btl']
+
+export const initialProducts = [
+  { id: 1,  name: 'Wai Wai Chicken Noodles 78g',  sku: 'WW-CHI-78',  category: 'Snacks',        brand: 'Wai Wai',     purchasePrice: 32,  sellingPrice: 50,   stock: 420, minStock: 50,  unit: 'Pkt', vatApplicable: true,  description: 'Popular instant noodles', status: 'Active' },
+  { id: 2,  name: 'Wai Wai Masala Noodles 78g',   sku: 'WW-MAS-78',  category: 'Snacks',        brand: 'Wai Wai',     purchasePrice: 32,  sellingPrice: 50,   stock: 8,   minStock: 50,  unit: 'Pkt', vatApplicable: true,  description: 'Masala flavored instant noodles', status: 'Low Stock' },
+  { id: 3,  name: 'Gold Peak Sugar 1kg',          sku: 'GP-SUG-1K',  category: 'Groceries',     brand: 'Gold Peak',   purchasePrice: 180, sellingPrice: 300,  stock: 24,  minStock: 40,  unit: 'Pkt', vatApplicable: false, description: 'Refined white sugar', status: 'Low Stock' },
+  { id: 4,  name: 'Relax Mustard Oil 1L',         sku: 'RL-MUS-1L',  category: 'Groceries',     brand: 'Relax',       purchasePrice: 320, sellingPrice: 450,  stock: 15,  minStock: 30,  unit: 'Btl', vatApplicable: true,  description: 'Pure mustard cooking oil', status: 'Low Stock' },
+  { id: 5,  name: 'Himalayan Salt 500g',          sku: 'HM-SLT-500', category: 'Groceries',     brand: 'Himalayan',   purchasePrice: 45,  sellingPrice: 80,   stock: 180, minStock: 40,  unit: 'Pkt', vatApplicable: false, description: 'Iodized table salt', status: 'Active' },
+  { id: 6,  name: 'Everest Tea 500g',             sku: 'EV-TEA-500', category: 'Beverages',     brand: 'Everest',     purchasePrice: 280, sellingPrice: 400,  stock: 95,  minStock: 30,  unit: 'Pkt', vatApplicable: true,  description: 'Premium Nepali tea leaves', status: 'Active' },
+  { id: 7,  name: 'Coca Cola 1.25L',              sku: 'CC-COL-125', category: 'Beverages',     brand: 'Coca Cola',   purchasePrice: 110, sellingPrice: 150,  stock: 240, minStock: 60,  unit: 'Btl', vatApplicable: true,  description: 'Carbonated soft drink', status: 'Active' },
+  { id: 8,  name: 'Sprite 1.25L',                 sku: 'SP-LMN-125', category: 'Beverages',     brand: 'Coca Cola',   purchasePrice: 110, sellingPrice: 150,  stock: 180, minStock: 60,  unit: 'Btl', vatApplicable: true,  description: 'Lemon-lime soft drink', status: 'Active' },
+  { id: 9,  name: 'Colgate Toothpaste 150g',      sku: 'CG-TPT-150', category: 'Personal Care', brand: 'Colgate',     purchasePrice: 180, sellingPrice: 260,  stock: 75,  minStock: 20,  unit: 'Pcs', vatApplicable: true,  description: 'Cavity protection toothpaste', status: 'Active' },
+  { id: 10, name: 'Lifebuoy Soap 100g',           sku: 'LB-SOP-100', category: 'Personal Care', brand: 'Lifebuoy',    purchasePrice: 65,  sellingPrice: 100,  stock: 320, minStock: 80,  unit: 'Pcs', vatApplicable: true,  description: 'Germ protection soap', status: 'Active' },
+  { id: 11, name: 'Classmate Notebook 200pg',     sku: 'CM-NBK-200', category: 'Stationery',    brand: 'Classmate',   purchasePrice: 120, sellingPrice: 180,  stock: 140, minStock: 30,  unit: 'Pcs', vatApplicable: true,  description: 'Single line notebook', status: 'Active' },
+  { id: 12, name: 'Reynolds Ball Pen',            sku: 'RN-PEN-BL',  category: 'Stationery',    brand: 'Reynolds',    purchasePrice: 10,  sellingPrice: 20,   stock: 600, minStock: 100, unit: 'Pcs', vatApplicable: true,  description: 'Blue ball pen', status: 'Active' },
+  { id: 13, name: 'Duracell AA Battery 4pk',      sku: 'DR-BAT-AA4', category: 'Electronics',   brand: 'Duracell',    purchasePrice: 380, sellingPrice: 550,  stock: 45,  minStock: 15,  unit: 'Pkt', vatApplicable: true,  description: 'Alkaline AA batteries', status: 'Active' },
+  { id: 14, name: 'Philips LED Bulb 9W',          sku: 'PH-LED-9W',  category: 'Electronics',   brand: 'Philips',     purchasePrice: 220, sellingPrice: 320,  stock: 60,  minStock: 20,  unit: 'Pcs', vatApplicable: true,  description: 'Energy saving LED bulb', status: 'Active' },
+  { id: 15, name: 'Amul Butter 100g',             sku: 'AM-BTR-100', category: 'Dairy',         brand: 'Amul',        purchasePrice: 190, sellingPrice: 260,  stock: 40,  minStock: 25,  unit: 'Pcs', vatApplicable: false, description: 'Pasteurized butter', status: 'Active' },
+  { id: 16, name: 'Nepal Dairy Milk 1L',          sku: 'ND-MIL-1L',  category: 'Dairy',         brand: 'Nepal Dairy', purchasePrice: 80,  sellingPrice: 110,  stock: 55,  minStock: 30,  unit: 'Pkt', vatApplicable: false, description: 'Fresh pasteurized milk', status: 'Active' },
+  { id: 17, name: 'Surf Excel 1kg',               sku: 'SX-DEL-1K',  category: 'Household',     brand: 'Surf Excel',  purchasePrice: 310, sellingPrice: 420,  stock: 70,  minStock: 20,  unit: 'Pkt', vatApplicable: true,  description: 'Detergent powder', status: 'Active' },
+  { id: 18, name: 'Vim Dishwash Bar 300g',        sku: 'VM-DWS-300', category: 'Household',     brand: 'Vim',         purchasePrice: 75,  sellingPrice: 110,  stock: 110, minStock: 30,  unit: 'Pcs', vatApplicable: true,  description: 'Dishwashing bar', status: 'Active' },
+  { id: 19, name: 'Maggi Tomato Ketchup 500g',    sku: 'MG-KTC-500', category: 'Groceries',     brand: 'Maggi',       purchasePrice: 180, sellingPrice: 260,  stock: 0,   minStock: 20,  unit: 'Btl', vatApplicable: true,  description: 'Tomato ketchup', status: 'Out of Stock' },
+  { id: 20, name: 'Noodles Masala 12pk',          sku: 'WW-MAS-12P', category: 'Snacks',        brand: 'Wai Wai',     purchasePrice: 360, sellingPrice: 540,  stock: 28,  minStock: 15,  unit: 'Pkt', vatApplicable: true,  description: 'Bulk pack noodles', status: 'Active' },
+]

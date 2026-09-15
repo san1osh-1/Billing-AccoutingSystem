@@ -1,0 +1,16 @@
+export const navigation = [
+  { key: 'dashboard', label: 'Dashboard' },
+  { key: 'sales', label: 'Sales / POS' },
+  { key: 'customers', label: 'Customers' },
+  { key: 'purchases', label: 'Purchases' },
+  { key: 'suppliers', label: 'Suppliers' },
+  { key: 'products', label: 'Products' },
+  { key: 'inventory', label: 'Inventory' },
+  { key: 'stock-adjustments', label: 'Stock Adjustments' },
+  { key: 'payments', label: 'Payments' },
+  { key: 'expenses', label: 'Expenses' },
+  { key: 'accounting', label: 'Accounting' },
+  { key: 'reports', label: 'Reports' },
+  { key: 'users', label: 'Users & Roles' },
+  { key: 'settings', label: 'Settings' },
+]
