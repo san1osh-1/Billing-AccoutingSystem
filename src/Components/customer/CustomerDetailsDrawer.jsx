@@ -1,11 +1,10 @@
 import { Mail, Phone, MapPin, CreditCard } from 'lucide-react'
 import Drawer from '../ui/Drawer'
 import Badge from '../ui/Badge'
-import { formatCurrency, formatDate } from '../../utils/format'
 import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function CustomerDetailsDrawer({ open, onClose, customer }) {
-  const { t } = useTranslation()
+  const { t, formatCurrency, formatDate } = useTranslation()
   if (!customer) return null
   const c = customer
 

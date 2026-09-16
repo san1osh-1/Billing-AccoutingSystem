@@ -3,7 +3,6 @@ import { Plus, FileText, ArrowDown, ArrowUp, Shuffle } from 'lucide-react'
 import useProducts from '../hooks/useProducts'
 import useStockAdjustments from '../hooks/useStockAdjustments'
 import useInventory from '../hooks/useInventory'
-import { formatDate } from '../utils/format'
 import PageHeader from '../Components/ui/PageHeader'
 import Button from '../Components/ui/Button'
 import Badge from '../Components/ui/Badge'
@@ -13,7 +12,7 @@ import StockOperationDrawer from '../Components/inventory/StockOperationDrawer'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function StockAdjustments() {
-  const { t } = useTranslation()
+  const { t, num, formatDate } = useTranslation()
   const { all: products, updateProduct } = useProducts()
   const { adjustments, loading, addAdjustment } = useStockAdjustments()
   const { addHistoryEntry } = useInventory(products)
@@ -47,7 +46,7 @@ export default function StockAdjustments() {
     },
     {
       key: 'qty', label: t('quantity'), align: 'right',
-      render: (r) => <span className={`font-semibold ${r.qty > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{r.qty > 0 ? '+' : ''}{r.qty}</span>,
+      render: (r) => <span className={`font-semibold ${r.qty > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{r.qty > 0 ? '+' : ''}{num(r.qty)}</span>,
     },
     { key: 'reason', label: t('reason'), render: (r) => <span className="text-slate-600 max-w-xs truncate block">{r.reason}</span> },
     { key: 'reference', label: t('reference'), render: (r) => <span className="font-mono text-xs text-slate-500">{r.reference || '—'}</span> },
@@ -57,16 +56,16 @@ export default function StockAdjustments() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={t('stock_adjustments')}
+        title={t('nav_stock_adjustments')}
         subtitle={t('stock_adjustments_subtitle')}
         action={<Button icon={Plus} onClick={() => setDrawerOpen(true)}>{t('new_adjustment')}</Button>}
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard title={t('total_adjustments')} value={String(counts.total)} icon={FileText} tone="brand" />
-        <KpiCard title={t('stock_in')} value={String(counts.in)} icon={ArrowDown} tone="emerald" />
-        <KpiCard title={t('stock_out')} value={String(counts.out)} icon={ArrowUp} tone="rose" />
-        <KpiCard title={t('corrections')} value={String(counts.adj)} icon={Shuffle} tone="amber" />
+        <KpiCard title={t('total_adjustments')} value={num(counts.total)} icon={FileText} tone="brand" />
+        <KpiCard title={t('stock_in')} value={num(counts.in)} icon={ArrowDown} tone="emerald" />
+        <KpiCard title={t('stock_out')} value={num(counts.out)} icon={ArrowUp} tone="rose" />
+        <KpiCard title={t('corrections')} value={num(counts.adj)} icon={Shuffle} tone="amber" />
       </div>
 
       <DataTable columns={columns} data={adjustments} loading={loading} />

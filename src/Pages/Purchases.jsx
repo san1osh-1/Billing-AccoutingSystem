@@ -3,7 +3,6 @@ import { Plus, ShoppingCart, Wallet, AlertTriangle, Receipt } from 'lucide-react
 import useProducts from '../hooks/useProducts'
 import useSuppliers from '../hooks/useSuppliers'
 import usePurchases from '../hooks/usePurchases'
-import { formatCurrency, formatDate } from '../utils/format'
 import PageHeader from '../Components/ui/PageHeader'
 import Button from '../Components/ui/Button'
 import Badge from '../Components/ui/Badge'
@@ -13,7 +12,7 @@ import PurchaseEntryDrawer from '../Components/purchases/PurchaseEntryDrawer'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Purchases() {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency, formatDate } = useTranslation()
   const { all: products, updateProduct } = useProducts()
   const { all: suppliers } = useSuppliers()
   const { purchases, loading, addPurchase, kpis } = usePurchases()
@@ -63,7 +62,7 @@ export default function Purchases() {
         <KpiCard title={t('total_purchase_amount')} value={formatCurrency(kpis.total)} icon={ShoppingCart} tone="brand" />
         <KpiCard title={t('paid')} value={formatCurrency(kpis.paid)} icon={Receipt} tone="emerald" />
         <KpiCard title={t('payable')} value={formatCurrency(kpis.due)} icon={Wallet} tone="amber" />
-        <KpiCard title={t('bills')} value={String(kpis.count)} icon={AlertTriangle} tone="sky" />
+        <KpiCard title={t('bills')} value={num(kpis.count)} icon={AlertTriangle} tone="sky" />
       </div>
 
       <DataTable

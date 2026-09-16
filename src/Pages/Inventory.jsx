@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Plus, Package, Warehouse, AlertTriangle, ArrowRightLeft } from 'lucide-react'
 import useProducts from '../hooks/useProducts'
 import useInventory from '../hooks/useInventory'
-import { formatCurrency, formatDate } from '../utils/format'
 import PageHeader from '../Components/ui/PageHeader'
 import Button from '../Components/ui/Button'
 import Badge from '../Components/ui/Badge'
@@ -12,7 +11,7 @@ import StockOperationDrawer from '../Components/inventory/StockOperationDrawer'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Inventory() {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency, formatDate } = useTranslation()
   const { all: products, loading: pLoad, updateProduct } = useProducts()
   const { history, loading: hLoad, kpis, addHistoryEntry } = useInventory(products)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -42,11 +41,11 @@ export default function Inventory() {
     { key: 'stock', label: t('current_stock'), align: 'right',
       render: (r) => (
         <span className={`font-semibold ${r.stock === 0 ? 'text-rose-600' : r.stock <= r.minStock ? 'text-amber-600' : 'text-slate-900'}`}>
-          {r.stock} <span className="text-xs text-slate-400 font-normal">{r.unit}</span>
+          {num(r.stock)} <span className="text-xs text-slate-400 font-normal">{r.unit}</span>
         </span>
       ),
     },
-    { key: 'minStock', label: t('min_stock'), align: 'right', render: (r) => <span className="text-slate-500">{r.minStock}</span> },
+    { key: 'minStock', label: t('min_stock'), align: 'right', render: (r) => <span className="text-slate-500">{num(r.minStock)}</span> },
     { key: 'purchasePrice', label: t('unit_cost'), align: 'right', render: (r) => formatCurrency(r.purchasePrice) },
     {
       key: 'value', label: t('stock_value'), align: 'right',
@@ -83,7 +82,7 @@ export default function Inventory() {
     },
     {
       key: 'qty', label: t('quantity'), align: 'right',
-      render: (r) => <span className={`font-semibold ${r.qty > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{r.qty > 0 ? '+' : ''}{r.qty}</span>,
+      render: (r) => <span className={`font-semibold ${r.qty > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{r.qty > 0 ? '+' : ''}{num(r.qty)}</span>,
     },
     { key: 'reference', label: t('reference'), render: (r) => <span className="font-mono text-xs text-slate-600">{r.reference || '—'}</span> },
     { key: 'user', label: t('user') },
@@ -98,9 +97,9 @@ export default function Inventory() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard title={t('total_products')} value={String(kpis.totalProducts)} icon={Package} tone="brand" />
-        <KpiCard title={t('total_stock')} value={String(kpis.totalStock)} icon={Warehouse} tone="sky" />
-        <KpiCard title={t('low_stock')} value={String(kpis.lowStock)} icon={AlertTriangle} tone="amber" />
+        <KpiCard title={t('total_products')} value={num(kpis.totalProducts)} icon={Package} tone="brand" />
+        <KpiCard title={t('total_stock')} value={num(kpis.totalStock)} icon={Warehouse} tone="sky" />
+        <KpiCard title={t('low_stock')} value={num(kpis.lowStock)} icon={AlertTriangle} tone="amber" />
         <KpiCard title={t('stock_value')} value={formatCurrency(kpis.stockValue)} icon={Package} tone="emerald" />
       </div>
 

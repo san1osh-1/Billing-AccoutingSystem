@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Search, Plus, Package } from 'lucide-react'
 import { categories } from '../../data/products'
-import { formatCurrency } from '../../utils/format'
 import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function ProductGrid({ products, onAddToCart }) {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency } = useTranslation()
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('')
 
@@ -80,7 +79,7 @@ export default function ProductGrid({ products, onAddToCart }) {
                 <div className="flex items-end justify-between mt-2">
                   <div>
                     <div className="text-sm font-bold text-brand-700">{formatCurrency(p.sellingPrice)}</div>
-                    <div className="text-[10px] text-slate-500">{t('stock')}: {p.stock}</div>
+                    <div className="text-[10px] text-slate-500">{t('stock')}: {num(p.stock)}</div>
                   </div>
                   <div className="w-7 h-7 rounded-full bg-brand-50 text-brand-700 flex items-center justify-center group-hover:bg-brand-600 group-hover:text-white transition">
                     <Plus className="w-4 h-4" />

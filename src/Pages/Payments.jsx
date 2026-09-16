@@ -3,7 +3,6 @@ import { Plus, ArrowDownCircle, ArrowUpCircle, Wallet, Receipt } from 'lucide-re
 import useCustomers from '../hooks/useCustomers'
 import useSuppliers from '../hooks/useSuppliers'
 import usePayments from '../hooks/usePayments'
-import { formatCurrency, formatDate } from '../utils/format'
 import PageHeader from '../Components/ui/PageHeader'
 import Button from '../Components/ui/Button'
 import Badge from '../Components/ui/Badge'
@@ -13,7 +12,7 @@ import RecordPaymentDrawer from '../Components/payments/RecordPaymentDrawer'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Payments() {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency, formatDate } = useTranslation()
   const { all: customers } = useCustomers()
   const { all: suppliers } = useSuppliers()
   const { payments, loading, addPayment, kpis } = usePayments()
@@ -54,7 +53,7 @@ export default function Payments() {
         <KpiCard title={t('received')} value={formatCurrency(kpis.received)} icon={ArrowDownCircle} tone="emerald" />
         <KpiCard title={t('paid_out')} value={formatCurrency(kpis.made)} icon={ArrowUpCircle} tone="rose" />
         <KpiCard title={t('net_flow')} value={formatCurrency(kpis.net)} icon={Wallet} tone="brand" />
-        <KpiCard title={t('transactions')} value={String(kpis.count)} icon={Receipt} tone="sky" />
+        <KpiCard title={t('transactions')} value={num(kpis.count)} icon={Receipt} tone="sky" />
       </div>
 
       <div className="flex gap-2">

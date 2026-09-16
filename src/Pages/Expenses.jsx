@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Plus, Wallet, Calendar, PieChart } from 'lucide-react'
 import useExpenses from '../hooks/useExpenses'
 import { expenseCategories } from '../data/expenses'
-import { formatCurrency, formatDate } from '../utils/format'
 import PageHeader from '../Components/ui/PageHeader'
 import Button from '../Components/ui/Button'
 import Badge from '../Components/ui/Badge'
@@ -15,7 +14,7 @@ import AddExpenseDrawer from '../Components/expenses/AddExpenseDrawer'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Expenses() {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency, formatDate } = useTranslation()
   const { expenses, all, loading, filters, setFilters, addExpense, kpis } = useExpenses()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -52,8 +51,8 @@ export default function Expenses() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard title={t('total_expenses')} value={formatCurrency(kpis.total)} icon={Wallet} tone="brand" />
         <KpiCard title={t('this_month')} value={formatCurrency(kpis.thisMonth)} icon={Calendar} tone="amber" />
-        <KpiCard title={t('categories')} value={String(Object.keys(kpis.byCategory).length)} icon={PieChart} tone="sky" />
-        <KpiCard title={t('records')} value={String(all.length)} icon={Wallet} tone="emerald" />
+        <KpiCard title={t('categories')} value={num(Object.keys(kpis.byCategory).length)} icon={PieChart} tone="sky" />
+        <KpiCard title={t('records')} value={num(all.length)} icon={Wallet} tone="emerald" />
       </div>
 
       {/* Category breakdown */}

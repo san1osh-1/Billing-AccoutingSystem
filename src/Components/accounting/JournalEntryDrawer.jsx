@@ -3,13 +3,12 @@ import { Plus, Trash2 } from 'lucide-react'
 import Drawer from '../ui/Drawer'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
-import { formatCurrency } from '../../utils/format'
 import { useTranslation } from '../../i18n/LanguageContext'
 
 const emptyLine = { accountId: '', accountName: '', debit: 0, credit: 0 }
 
 export default function JournalEntryDrawer({ open, onClose, onSubmit, accounts }) {
-  const { t } = useTranslation()
+  const { t, formatCurrency } = useTranslation()
   const [date, setDate] = useState('')
   const [description, setDescription] = useState('')
   const [reference, setReference] = useState('')

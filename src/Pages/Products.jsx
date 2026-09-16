@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Plus, Edit2, Trash2, Package } from 'lucide-react'
 import useProducts from '../hooks/useProducts'
-import { formatCurrency } from '../utils/format'
 import PageHeader from '../Components/ui/PageHeader'
 import Button from '../Components/ui/Button'
 import Badge from '../Components/ui/Badge'
@@ -13,7 +12,7 @@ import ConfirmModal from '../Components/ui/ConfirmModal'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Products() {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency } = useTranslation()
   const { products, all, loading, filters, setFilters, addProduct, deleteProduct, updateProduct } = useProducts()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -47,7 +46,7 @@ export default function Products() {
       key: 'stock', label: t('stock'), align: 'right',
       render: (r) => (
         <span className={`font-semibold ${r.stock === 0 ? 'text-rose-600' : r.stock <= r.minStock ? 'text-amber-600' : 'text-slate-900'}`}>
-          {r.stock} <span className="text-xs text-slate-400 font-normal">{r.unit}</span>
+          {num(r.stock)} <span className="text-xs text-slate-400 font-normal">{r.unit}</span>
         </span>
       ),
     },
@@ -87,7 +86,7 @@ export default function Products() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpis.map((k) => <KpiCard key={k.title} {...k} value={String(k.value)} />)}
+        {kpis.map((k) => <KpiCard key={k.title} {...k} value={num(k.value)} />)}
       </div>
 
       <ProductFilters filters={filters} setFilters={setFilters} />

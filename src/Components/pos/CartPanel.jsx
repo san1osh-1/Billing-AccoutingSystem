@@ -1,6 +1,5 @@
 import { Minus, Plus, Trash2, User, ShoppingBag } from 'lucide-react'
 import { calcCartTotals, paymentMethods } from '../../utils/cart'
-import { formatCurrency } from '../../utils/format'
 import Button from '../ui/Button'
 import { useTranslation } from '../../i18n/LanguageContext'
 
@@ -9,7 +8,7 @@ export default function CartPanel({
   extraDiscount, setExtraDiscount, paymentMethod, setPaymentMethod,
   onUpdateQty, onRemove, onCompleteSale, onClear,
 }) {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency } = useTranslation()
   const totals = calcCartTotals(cart, extraDiscount)
   const canComplete = cart.length > 0 && paymentMethod &&
     (paymentMethod !== 'credit' || selectedCustomerId)
@@ -62,7 +61,7 @@ export default function CartPanel({
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-slate-900 truncate">{item.name}</div>
                     <div className="text-xs text-slate-500 mt-0.5">
-                      {formatCurrency(item.price)} × {item.quantity}
+                      {formatCurrency(item.price)} × {num(item.quantity)}
                     </div>
                   </div>
                   <div className="text-sm font-semibold text-slate-900">
@@ -78,7 +77,7 @@ export default function CartPanel({
                     >
                       <Minus className="w-3.5 h-3.5" />
                     </button>
-                    <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                    <span className="w-8 text-center text-sm font-medium">{num(item.quantity)}</span>
                     <button
                       onClick={() => onUpdateQty(item.id, item.quantity + 1)}
                       disabled={item.quantity >= item.maxStock}

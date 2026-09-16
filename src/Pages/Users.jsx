@@ -12,7 +12,7 @@ import Modal from '../Components/ui/Modal'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Users() {
-  const { t } = useTranslation()
+  const { t, num } = useTranslation()
   const { users, roles, loading, addUser, updateUser, toggleUserStatus } = useUsers()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -45,7 +45,7 @@ export default function Users() {
       key: 'status', label: t('status'),
       render: (r) => <Badge tone={r.status === 'Active' ? 'success' : 'neutral'} dot>{t(r.status === 'Active' ? 'status_active' : 'status_inactive')}</Badge>,
     },
-    { key: 'lastLogin', label: t('last_login'), render: (r) => <span className="text-xs text-slate-600">{r.lastLogin}</span> },
+    { key: 'lastLogin', label: t('last_login'), render: (r) => <span className="text-xs text-slate-600">{num(r.lastLogin)}</span> },
     {
       key: 'actions', label: '', sortable: false, align: 'right',
       render: (r) => (
@@ -72,7 +72,7 @@ export default function Users() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        {kpis.map((k) => <KpiCard key={k.title} {...k} value={String(k.value)} />)}
+        {kpis.map((k) => <KpiCard key={k.title} {...k} value={num(k.value)} />)}
       </div>
 
       {/* Roles overview */}
@@ -91,7 +91,7 @@ export default function Users() {
               </div>
               <p className="text-xs text-slate-500">{role.description}</p>
               <p className="text-xs text-slate-400 mt-2">
-                {users.filter((u) => u.roleId === role.id).length} {users.filter((u) => u.roleId === role.id).length !== 1 ? t('total_users').toLowerCase() : t('user').toLowerCase()}
+                {num(users.filter((u) => u.roleId === role.id).length)} {users.filter((u) => u.roleId === role.id).length !== 1 ? t('total_users').toLowerCase() : t('user').toLowerCase()}
               </p>
             </button>
           ))}

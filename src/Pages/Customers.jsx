@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Plus, Users, UserCheck, Wallet, AlertTriangle, Eye, Edit2, Trash2 } from 'lucide-react'
 import useCustomers from '../hooks/useCustomers'
-import { formatCurrency } from '../utils/format'
 import PageHeader from '../Components/ui/PageHeader'
 import Button from '../Components/ui/Button'
 import Badge from '../Components/ui/Badge'
@@ -14,7 +13,7 @@ import ConfirmModal from '../Components/ui/ConfirmModal'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Customers() {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency } = useTranslation()
   const { customers, loading, filters, setFilters, kpis, addCustomer, updateCustomer, deleteCustomer } = useCustomers()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -136,13 +135,13 @@ export default function Customers() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           title={t('total_customers')}
-          value={String(kpis.total)}
+          value={num(kpis.total)}
           icon={Users}
           tone="brand"
         />
         <KpiCard
           title={t('active_customers')}
-          value={String(kpis.active)}
+          value={num(kpis.active)}
           icon={UserCheck}
           tone="emerald"
         />

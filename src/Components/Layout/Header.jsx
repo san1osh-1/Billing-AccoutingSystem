@@ -1,5 +1,6 @@
 import { Search, Bell, Menu, ChevronDown } from 'lucide-react'
 import LanguageSwitcher from '../ui/LanguageSwitcher'
+import DateSystemSwitcher from '../ui/DateSystemSwitcher'
 import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function Header({ onMenuClick, title }) {
@@ -36,6 +37,7 @@ export default function Header({ onMenuClick, title }) {
 
         {/* Right */}
         <div className="flex items-center gap-2">
+          <DateSystemSwitcher />
           <LanguageSwitcher />
 
           <button className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-600" aria-label={t('notifications')}>

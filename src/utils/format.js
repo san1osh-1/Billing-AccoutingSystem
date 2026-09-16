@@ -12,6 +12,10 @@ export const formatIN = (num) => {
   return decPart === '00' ? formatted : `${formatted}.${decPart}`
 }
 
+// Converts all ASCII digits in a string to Devanagari (Nepali) numerals
+export const toNe = (str) =>
+  String(str ?? '').replace(/\d/g, (d) => '०१२३४५६७८९'[d])
+
 export const formatCurrency = (num, prefix = 'Rs. ') =>
   num === 0 || num ? `${prefix}${formatIN(num)}` : ''
 

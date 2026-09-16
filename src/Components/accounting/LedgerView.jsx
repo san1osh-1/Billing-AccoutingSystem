@@ -1,9 +1,8 @@
-import { formatCurrency, formatDate } from '../../utils/format'
 import Badge from '../ui/Badge'
 import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function LedgerView({ ledger, type = 'customer' }) {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency, formatDate } = useTranslation()
   if (!ledger || ledger.length === 0) {
     return <p className="text-sm text-slate-500 py-8 text-center">{t('no_ledger_entries')}</p>
   }
@@ -20,7 +19,7 @@ export default function LedgerView({ ledger, type = 'customer' }) {
               <div>
                 <h4 className="text-sm font-semibold text-slate-900">{party[`${type}Name`]}</h4>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  {party.transactions.length} {party.transactions.length !== 1 ? t('transactions') : t('transaction')}
+                  {num(party.transactions.length)} {party.transactions.length !== 1 ? t('transactions') : t('transaction')}
                 </p>
               </div>
               {hasBalance && (

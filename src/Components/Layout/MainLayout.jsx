@@ -12,7 +12,7 @@ export default function MainLayout() {
   const { t } = useTranslation()
 
   const current = navigation.find((n) => `/${n.key}` === location.pathname)
-  const title = current ? t(`nav_${current.key}`) : t('dashboard')
+  const title = current ? t(`nav_${current.key.replaceAll('-', '_')}`) : t('dashboard')
 
   return (
     <div className="min-h-screen bg-slate-50">

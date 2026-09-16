@@ -1,8 +1,7 @@
-import { formatCurrency } from '../../utils/format'
 import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function ReportTable({ report }) {
-  const { t } = useTranslation()
+  const { t, formatCurrency } = useTranslation()
   if (!report) return null
 
   return (

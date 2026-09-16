@@ -4,7 +4,6 @@ import useProducts from '../hooks/useProducts'
 import useCustomers from '../hooks/useCustomers'
 import useSales from '../hooks/useSales'
 import { calcCartTotals } from '../utils/cart'
-import { formatCurrency } from '../utils/format'
 import PageHeader from '../Components/ui/PageHeader'
 import KpiCard from '../Components/ui/KpiCard'
 import ProductGrid from '../Components/pos/ProductGrid'
@@ -13,7 +12,7 @@ import InvoiceModal from '../Components/pos/InvoiceModal'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Sales() {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency } = useTranslation()
   const { all: products, updateProduct } = useProducts()
   const { all: customers } = useCustomers()
   const { addSale, kpis } = useSales()
@@ -100,7 +99,7 @@ export default function Sales() {
         <KpiCard title={t('todays_sales')} value={formatCurrency(kpis.total)} icon={ShoppingCart} tone="brand" />
         <KpiCard title={t('paid')} value={formatCurrency(kpis.paid)} icon={Receipt} tone="emerald" />
         <KpiCard title={t('due')} value={formatCurrency(kpis.due)} icon={Receipt} tone="rose" />
-        <KpiCard title={t('invoices')} value={String(kpis.count)} icon={Receipt} tone="sky" />
+        <KpiCard title={t('invoices')} value={num(kpis.count)} icon={Receipt} tone="sky" />
       </div>
 
       {/* Mobile tabs */}
@@ -117,7 +116,7 @@ export default function Sales() {
         >
           {t('cart')} {cart.length > 0 && (
             <span className="ml-1.5 inline-flex w-5 h-5 rounded-full bg-brand-600 text-white text-xs items-center justify-center">
-              {cart.length}
+              {num(cart.length)}
             </span>
           )}
         </button>

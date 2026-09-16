@@ -8,11 +8,10 @@ import JournalEntryDrawer from '../Components/accounting/JournalEntryDrawer'
 import LedgerView from '../Components/accounting/LedgerView'
 import DataTable from '../Components/ui/DataTable'
 import Badge from '../Components/ui/Badge'
-import { formatCurrency, formatDate } from '../utils/format'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Accounting() {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency, formatDate } = useTranslation()
   const { accounts, journal, customerLedgerData, supplierLedgerData, loading, addJournalEntry } = useAccounting()
   const [tab, setTab] = useState('chart')
   const [journalDrawerOpen, setJournalDrawerOpen] = useState(false)
@@ -31,7 +30,7 @@ export default function Accounting() {
     },
     {
       key: 'lines', label: t('lines'), align: 'center',
-      render: (r) => <Badge tone="info">{r.lines.length} {t('lines')}</Badge>,
+      render: (r) => <Badge tone="info">{num(r.lines.length)} {t('lines')}</Badge>,
     },
   ]
 

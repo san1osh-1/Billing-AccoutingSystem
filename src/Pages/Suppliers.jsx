@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Plus, Truck, CheckCircle, Wallet, AlertTriangle, Eye, Edit2, Trash2 } from 'lucide-react'
 import useSuppliers from '../hooks/useSuppliers'
-import { formatCurrency } from '../utils/format'
 import PageHeader from '../Components/ui/PageHeader'
 import Button from '../Components/ui/Button'
 import Badge from '../Components/ui/Badge'
@@ -14,7 +13,7 @@ import ConfirmModal from '../Components/ui/ConfirmModal'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Suppliers() {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency } = useTranslation()
   const { suppliers, loading, filters, setFilters, kpis, addSupplier, updateSupplier, deleteSupplier } = useSuppliers()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -65,8 +64,8 @@ export default function Suppliers() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard title={t('total_suppliers')} value={String(kpis.total)} icon={Truck} tone="brand" />
-        <KpiCard title={t('active_suppliers')} value={String(kpis.active)} icon={CheckCircle} tone="emerald" />
+        <KpiCard title={t('total_suppliers')} value={num(kpis.total)} icon={Truck} tone="brand" />
+        <KpiCard title={t('active_suppliers')} value={num(kpis.active)} icon={CheckCircle} tone="emerald" />
         <KpiCard title={t('total_payable')} value={formatCurrency(kpis.payable)} icon={Wallet} tone="amber" />
         <KpiCard title={t('overdue_payable')} value={formatCurrency(kpis.overdue)} icon={AlertTriangle} tone="rose" />
       </div>

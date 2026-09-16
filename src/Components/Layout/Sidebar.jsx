@@ -72,7 +72,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
           <ul className="space-y-0.5">
             {navigation.map((item) => {
               const Icon = iconMap[item.key] || LayoutDashboard
-              const label = t(`nav_${item.key}`)
+              const label = t(`nav_${item.key.replaceAll('-', '_')}`)
               const isActive = location.pathname === `/${item.key}` ||
                 (item.key === 'dashboard' && location.pathname === '/')
 

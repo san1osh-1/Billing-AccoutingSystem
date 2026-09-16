@@ -5,13 +5,12 @@ import Drawer from '../ui/Drawer'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Select from '../ui/Select'
-import { formatCurrency } from '../../utils/format'
 import { calcLineTotal, VAT_RATE } from '../../utils/cart'
 
 const emptyLine = { productId: '', name: '', qty: 1, price: 0, discount: 0, vatApplicable: true }
 
 export default function PurchaseEntryDrawer({ open, onClose, onSubmit, suppliers, products }) {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency } = useTranslation()
   const [supplierId, setSupplierId] = useState('')
   const [invoiceNo, setInvoiceNo] = useState('')
   const [lines, setLines] = useState([{ ...emptyLine }])
@@ -154,7 +153,7 @@ export default function PurchaseEntryDrawer({ open, onClose, onSubmit, suppliers
         <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-1.5 text-sm">
           <div className="flex justify-between text-slate-600"><span>{t('subtotal')}</span><span>{formatCurrency(totals.subtotal)}</span></div>
           <div className="flex justify-between text-rose-600"><span>{t('discount')}</span><span>−{formatCurrency(totals.discount)}</span></div>
-          <div className="flex justify-between text-slate-600"><span>{t('vat')} ({VAT_RATE}%)</span><span>{formatCurrency(totals.vat)}</span></div>
+          <div className="flex justify-between text-slate-600"><span>{t('vat')} ({num(VAT_RATE)}%)</span><span>{formatCurrency(totals.vat)}</span></div>
           <div className="flex justify-between text-base font-bold text-slate-900 pt-2 border-t border-slate-200">
             <span>{t('grand_total')}</span><span>{formatCurrency(totals.grandTotal)}</span>
           </div>

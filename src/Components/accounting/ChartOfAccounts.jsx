@@ -1,9 +1,8 @@
-import { formatCurrency } from '../../utils/format'
 import Badge from '../ui/Badge'
 import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function ChartOfAccounts({ accounts }) {
-  const { t } = useTranslation()
+  const { t, formatCurrency } = useTranslation()
   const grouped = accounts.reduce((acc, account) => {
     if (!acc[account.type]) acc[account.type] = []
     acc[account.type].push(account)

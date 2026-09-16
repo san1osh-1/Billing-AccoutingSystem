@@ -1,11 +1,10 @@
 import { Printer, CheckCircle2 } from 'lucide-react'
 import Modal from '../ui/Modal'
 import Button from '../ui/Button'
-import { formatCurrency, formatDate } from '../../utils/format'
 import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function InvoiceModal({ open, onClose, sale }) {
-  const { t } = useTranslation()
+  const { t, num, formatCurrency, formatDate } = useTranslation()
   if (!sale) return null
 
   const handlePrint = () => window.print()
@@ -54,7 +53,7 @@ export default function InvoiceModal({ open, onClose, sale }) {
             {sale.items.map((item, i) => (
               <div key={i} className="flex justify-between text-xs">
                 <span className="text-slate-700 flex-1">
-                  {item.name} <span className="text-slate-400">×{item.qty}</span>
+                  {item.name} <span className="text-slate-400">×{num(item.qty)}</span>
                 </span>
                 <span className="font-medium text-slate-900">{formatCurrency(item.price * item.qty)}</span>
               </div>
