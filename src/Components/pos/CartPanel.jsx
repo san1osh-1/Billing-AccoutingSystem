@@ -151,8 +151,7 @@ export default function CartPanel({
                       : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                   }`}
                 >
-                  <span className="mr-1">{m.icon}</span>
-                  {t('method_' + m.key)}
+                  <span>{t('method_' + m.key)}</span>
                 </button>
               ))}
             </div>

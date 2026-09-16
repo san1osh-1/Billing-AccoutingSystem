@@ -22,6 +22,15 @@ export const translations = {
     date_system: 'Calendar system',
     date_system_ad: 'English / Gregorian (AD)',
     date_system_bs: 'Bikram Sambat (BS)',
+
+    // Invoice
+    tax_invoice_title: 'Tax Invoice',
+    fiscal_year: 'Fiscal Year',
+    download_pdf: 'Download PDF',
+    thank_you_note: 'Thank you for your business!',
+    goods_return_note: 'Goods once sold will not be taken back.',
+    time: 'Time',
+    rate: 'Rate',
     open_menu: 'Open menu',
     close_menu: 'Close menu',
     toggle_sidebar: 'Toggle sidebar',
@@ -527,6 +536,15 @@ export const translations = {
     date_system: 'पात्रो प्रणाली',
     date_system_ad: 'इंग्रजी (सन्)',
     date_system_bs: 'विक्रम संवत् (वि.सं.)',
+
+    // Invoice
+    tax_invoice_title: 'कर इनभ्वाइस',
+    fiscal_year: 'आर्थिक वर्ष',
+    download_pdf: 'PDF डाउनलोड',
+    thank_you_note: 'तपाईंको व्यवसायको लागि धन्यवाद!',
+    goods_return_note: 'एक पटक बेचिएको माल फिर्ता लिइँदैन।',
+    time: 'समय',
+    rate: 'दर',
     open_menu: 'मेनु खोल्नुहोस्',
     close_menu: 'मेनु बन्द गर्नुहोस्',
     toggle_sidebar: 'साइडबार टगल गर्नुहोस्',

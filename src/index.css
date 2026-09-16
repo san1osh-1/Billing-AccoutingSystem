@@ -28,3 +28,23 @@
 .focus-ring {
   @apply focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1;
 }
+
+/* IRD receipt printing — only the receipt area is printed */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #receipt-print-area,
+  #receipt-print-area * {
+    visibility: visible;
+  }
+  #receipt-print-area {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+}
