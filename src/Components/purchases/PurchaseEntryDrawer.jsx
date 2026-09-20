@@ -20,7 +20,7 @@ export default function PurchaseEntryDrawer({ open, onClose, onSubmit, suppliers
   const [errors, setErrors] = useState({})
   const [prevOpen, setPrevOpen] = useState(open)
 
-  if (open && prevOpen !== open) {
+  if (open !== prevOpen) {
     setPrevOpen(open)
     setSupplierId(''); setInvoiceNo(''); setLines([{ ...emptyLine }])
     setPaymentMethod('bank'); setPaymentStatus('Paid'); setAmountPaid(''); setErrors({})

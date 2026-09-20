@@ -16,7 +16,7 @@ export default function RecordPaymentDrawer({ open, onClose, onSubmit, customers
   const [errors, setErrors] = useState({})
   const [prevOpen, setPrevOpen] = useState(open)
 
-  if (open && prevOpen !== open) {
+  if (open !== prevOpen) {
     setPrevOpen(open)
     setType('received'); setPartyId(''); setAmount(''); setMethod('bank'); setReference(''); setNotes(''); setErrors({})
   }

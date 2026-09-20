@@ -13,7 +13,7 @@ export default function AddCustomerDrawer({ open, onClose, onSubmit, initial }) 
   const [prevOpen, setPrevOpen] = useState(open)
   const isEdit = Boolean(initial)
 
-  if (open && prevOpen !== open) {
+  if (open !== prevOpen) {
     setPrevOpen(open)
     setForm(initial ? { name: initial.name, phone: initial.phone, email: initial.email, address: initial.address || '', pan: initial.pan || '' } : emptyForm)
     setErrors({})

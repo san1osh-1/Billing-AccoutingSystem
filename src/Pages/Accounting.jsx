@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Plus, BookOpen, FileText, Users, Truck } from 'lucide-react'
 import useAccounting from '../hooks/useAccounting';
 import PageHeader from "../Components/ui/PageHeader.jsx";
@@ -11,10 +12,23 @@ import Badge from '../Components/ui/Badge'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Accounting() {
+  const location = useLocation()
   const { t, num, formatCurrency, formatDate } = useTranslation()
   const { accounts, journal, customerLedgerData, supplierLedgerData, loading, addJournalEntry } = useAccounting()
-  const [tab, setTab] = useState('chart')
+
+  const getTabFromPath = (pathname) => {
+    if (pathname.includes('journal')) return 'journal'
+    if (pathname.includes('receivable')) return 'customer'
+    if (pathname.includes('payable')) return 'supplier'
+    return 'chart'
+  }
+
+  const [tab, setTab] = useState(() => getTabFromPath(location.pathname))
   const [journalDrawerOpen, setJournalDrawerOpen] = useState(false)
+
+  useEffect(() => {
+    setTab(getTabFromPath(location.pathname))
+  }, [location.pathname])
 
   const journalColumns = [
     { key: 'id', label: t('entry_no'), render: (r) => <span className="font-mono text-xs font-semibold text-brand-700">{r.id}</span> },

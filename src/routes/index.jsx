@@ -2,16 +2,23 @@ import { Navigate } from 'react-router-dom'
 import MainLayout from '../Components/Layout/MainLayout'
 import Dashboard from '../Pages/Dashboard'
 import Sales from '../Pages/Sales'
+import SalesInvoices from '../Pages/SalesInvoices'
+import SalesReturns from '../Pages/SalesReturns'
 import Customers from '../Pages/Customers'
+import Leads from '../Pages/Leads'
 import Purchases from '../Pages/Purchases'
 import Suppliers from '../Pages/Suppliers'
 import Products from '../Pages/Products'
-import Inventory from '../Pages/Inventory'
+import InventoryCategories from '../Pages/InventoryCategories'
+import InventoryUnits from '../Pages/InventoryUnits'
+import StockTransfers from '../Pages/StockTransfers'
 import StockAdjustments from '../Pages/StockAdjustments'
+import LowStock from '../Pages/LowStock'
 import Payments from '../Pages/Payments'
 import Expenses from '../Pages/Expenses'
 import Accounting from '../Pages/Accounting'
 import Reports from '../Pages/Reports'
+import OperationalReports from '../Pages/OperationalReports'
 import Users from '../Pages/Users'
 import Settings from '../Pages/Settings'
 
@@ -22,17 +29,55 @@ const routes = [
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <Dashboard /> },
-      { path: 'sales', element: <Sales /> },
+
+      // CRM
       { path: 'customers', element: <Customers /> },
-      { path: 'purchases', element: <Purchases /> },
+      { path: 'leads', element: <Leads /> },
+
+      // Sales & POS
+      { path: 'sales', element: <Sales /> },
+      { path: 'sales/pos', element: <Sales /> },
+      { path: 'sales/invoices', element: <SalesInvoices /> },
+      { path: 'sales/returns', element: <SalesReturns /> },
+      { path: 'payments/received', element: <Payments /> },
+
+      // Purchase
       { path: 'suppliers', element: <Suppliers /> },
+      { path: 'purchases', element: <Purchases /> },
+      { path: 'purchases/bills', element: <Purchases /> },
+      { path: 'purchases/returns', element: <Purchases /> },
+      { path: 'payments/made', element: <Payments /> },
+
+      // Inventory
       { path: 'products', element: <Products /> },
-      { path: 'inventory', element: <Inventory /> },
+      { path: 'inventory/items', element: <Navigate to="/products" replace /> },
+      { path: 'inventory/categories', element: <InventoryCategories /> },
+      { path: 'inventory/units', element: <InventoryUnits /> },
+      { path: 'inventory/transfers', element: <StockTransfers /> },
       { path: 'stock-adjustments', element: <StockAdjustments /> },
-      { path: 'payments', element: <Payments /> },
-      { path: 'expenses', element: <Expenses /> },
+      { path: 'inventory/low-stock', element: <LowStock /> },
+
+      // Accounting
       { path: 'accounting', element: <Accounting /> },
+      { path: 'accounting/chart', element: <Accounting /> },
+      { path: 'accounting/journal', element: <Accounting /> },
+      { path: 'expenses', element: <Expenses /> },
+      { path: 'accounting/receivable', element: <Accounting /> },
+      { path: 'accounting/payable', element: <Accounting /> },
+
+      // Reports & Analytics
       { path: 'reports', element: <Reports /> },
+      { path: 'reports/profit-loss', element: <Reports /> },
+      { path: 'reports/balance-sheet', element: <Reports /> },
+      { path: 'reports/cash-flow', element: <Reports /> },
+      { path: 'reports/trial-balance', element: <Reports /> },
+      { path: 'reports/sales', element: <OperationalReports /> },
+      { path: 'reports/purchases', element: <OperationalReports /> },
+      { path: 'reports/inventory', element: <OperationalReports /> },
+      { path: 'reports/vat', element: <OperationalReports /> },
+
+      // Retain fallback / direct utility paths
+      { path: 'payments', element: <Payments /> },
       { path: 'users', element: <Users /> },
       { path: 'settings', element: <Settings /> },
     ],

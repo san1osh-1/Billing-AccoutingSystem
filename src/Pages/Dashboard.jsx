@@ -11,10 +11,11 @@ import KpiCard from '../Components/ui/KpiCard'
 import Badge from '../Components/ui/Badge'
 import Button from '../Components/ui/Button'
 import PageHeader from '../Components/ui/PageHeader'
-import { initialSales } from '../data/sales'
-import { initialPurchases } from '../data/purchases'
-import { initialExpenses } from '../data/expenses'
-import { initialProducts } from '../data/products'
+import useSales from '../hooks/useSales'
+import usePurchases from '../hooks/usePurchases'
+import useExpenses from '../hooks/useExpenses'
+import useProducts from '../hooks/useProducts'
+import LoadingState from '../Components/ui/LoadingState'
 import { useTranslation } from '../i18n/LanguageContext'
 import { adToBsParts } from '../utils/bs'
 
@@ -82,15 +83,22 @@ export default function Dashboard() {
   const [range, setRange] = useState('this_month')
   const now = new Date()
 
+  const { sales = [], loading: salesLoading } = useSales()
+  const { purchases = [], loading: purchasesLoading } = usePurchases()
+  const { expenses = [], loading: expensesLoading } = useExpenses()
+  const { products = [], loading: productsLoading } = useProducts()
+
+  const loading = salesLoading || purchasesLoading || expensesLoading || productsLoading
+
   const cur = periodBounds(range, now)
   const prev = prevBounds(range, now)
 
-  const curSales = initialSales.filter((x) => inRange(x.date, cur))
-  const prevSales = initialSales.filter((x) => inRange(x.date, prev))
-  const curPurchases = initialPurchases.filter((x) => inRange(x.date, cur))
-  const prevPurchases = initialPurchases.filter((x) => inRange(x.date, prev))
-  const curExpenses = initialExpenses.filter((x) => inRange(x.date, cur))
-  const prevExpenses = initialExpenses.filter((x) => inRange(x.date, prev))
+  const curSales = sales.filter((x) => inRange(x.date, cur))
+  const prevSales = sales.filter((x) => inRange(x.date, prev))
+  const curPurchases = purchases.filter((x) => inRange(x.date, cur))
+  const prevPurchases = purchases.filter((x) => inRange(x.date, prev))
+  const curExpenses = expenses.filter((x) => inRange(x.date, cur))
+  const prevExpenses = expenses.filter((x) => inRange(x.date, prev))
 
   const curSalesTotal = sum(curSales, (x) => x.grandTotal)
   const prevSalesTotal = sum(prevSales, (x) => x.grandTotal)
@@ -127,10 +135,10 @@ export default function Dashboard() {
   const buildChart = (names, keys, toKey) =>
     names.map((name, i) => {
       const key = keys[i]
-      const sales = sum(initialSales.filter((x) => toKey(x) === key), (x) => x.grandTotal)
-      const purchases = sum(initialPurchases.filter((x) => toKey(x) === key), (x) => x.grandTotal)
-      const expenses = sum(initialExpenses.filter((x) => toKey(x) === key), (x) => x.amount)
-      return { name, sales, profit: sales - purchases - expenses }
+      const sTotal = sum(sales.filter((x) => toKey(x) === key), (x) => x.grandTotal)
+      const pTotal = sum(purchases.filter((x) => toKey(x) === key), (x) => x.grandTotal)
+      const eTotal = sum(expenses.filter((x) => toKey(x) === key), (x) => x.amount)
+      return { name, sales: sTotal, profit: sTotal - pTotal - eTotal }
     })
 
   const bsToday = adToBsParts(new Date().toISOString().slice(0, 10))
@@ -145,7 +153,7 @@ export default function Dashboard() {
     ? buildChart(BS_MONTH_NAMES, bsKeys, bsKeyOf)
     : buildChart(MONTH_NAMES, MONTH_KEYS, (x) => x.date.slice(0, 7))
 
-  const lowStock = initialProducts
+  const lowStock = products
     .filter((p) => p.stock <= p.minStock)
     .sort((a, b) => a.stock / a.minStock - b.stock / b.minStock)
     .slice(0, 5)
@@ -155,7 +163,7 @@ export default function Dashboard() {
     }))
 
   const perProduct = {}
-  initialSales.forEach((s) =>
+  sales.forEach((s) =>
     (s.items || []).forEach((it) => {
       const rec = perProduct[it.name] || (perProduct[it.name] = { units: 0, revenue: 0 })
       rec.units += it.qty
@@ -171,6 +179,15 @@ export default function Dashboard() {
     .slice()
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 6)
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title={t('dashboard')} subtitle={t('dashboard_subtitle')} />
+        <Card><LoadingState rows={8} /></Card>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

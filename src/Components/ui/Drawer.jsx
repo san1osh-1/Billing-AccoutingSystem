@@ -15,12 +15,25 @@ export default function Drawer({ open, onClose, title, children, footer, size = 
 
   if (!open) return null
 
-  const sizes = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-2xl' }
+  const sizes = {
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-lg',
+    xl: 'max-w-2xl',
+    '2xl': 'max-w-4xl',
+    full: 'w-1/2',
+  }
 
   return (
-    <div className="fixed inset-0 z-[70]">
+    <div className="fixed inset-0 z-[70] !m-0">
       <div className="absolute inset-0 bg-slate-900/50" onClick={onClose} />
-      <div className={`absolute inset-y-0 right-0 w-full ${sizes[size]} bg-white shadow-xl flex flex-col`}>
+      <div
+        className={`
+          absolute bg-white shadow-xl flex flex-col h-full inset-y-0 right-0
+          ${size === 'full' ? 'w-1/2' : 'w-full'}
+          ${sizes[size]}
+        `}
+      >
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
           <h3 className="text-base font-semibold text-slate-900">{title}</h3>
           <button onClick={onClose} className="p-1 rounded-md hover:bg-slate-100 text-slate-500" aria-label="Close">

@@ -9,7 +9,7 @@ export default function CustomerDetailsDrawer({ open, onClose, customer }) {
   const c = customer
 
   return (
-    <Drawer open={open} onClose={onClose} title={t('customer_details')} size="lg">
+    <Drawer open={open} onClose={onClose} title={t('customer_details')} size="full">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between">

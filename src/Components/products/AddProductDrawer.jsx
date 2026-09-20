@@ -1,15 +1,26 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useTranslation } from '../../i18n/LanguageContext'
 import Drawer from '../ui/Drawer'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Select from '../ui/Select'
 import { categories, units } from '../../data/products'
+import { uploadToCloudinary } from '../../lib/cloudinary'
+import { Upload, Image as ImageIcon, X } from 'lucide-react'
 
 const emptyForm = {
-  name: '', sku: '', category: '', brand: '',
-  purchasePrice: '', sellingPrice: '', stock: '',
-  minStock: '', unit: 'Pcs', vatApplicable: true, description: '',
+  name: '',
+  sku: '',
+  category: '',
+  brand: '',
+  purchasePrice: '',
+  sellingPrice: '',
+  stock: '',
+  minStock: '',
+  unit: 'Pcs',
+  vatApplicable: true,
+  description: '',
+  imageUrl: '',
 }
 
 export default function AddProductDrawer({ open, onClose, onSubmit, initial }) {
@@ -17,21 +28,50 @@ export default function AddProductDrawer({ open, onClose, onSubmit, initial }) {
   const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState({})
   const [prevOpen, setPrevOpen] = useState(open)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
+  const fileInputRef = useRef(null)
   const isEdit = Boolean(initial)
 
-  if (open && prevOpen !== open) {
+  if (open !== prevOpen) {
     setPrevOpen(open)
     if (initial) {
       setForm({
-        name: initial.name, sku: initial.sku, category: initial.category, brand: initial.brand || '',
-        purchasePrice: initial.purchasePrice, sellingPrice: initial.sellingPrice,
-        stock: initial.stock, minStock: initial.minStock,
-        unit: initial.unit, vatApplicable: initial.vatApplicable, description: initial.description || '',
+        name: initial.name,
+        sku: initial.sku,
+        category: initial.category,
+        brand: initial.brand || '',
+        purchasePrice: initial.purchasePrice,
+        sellingPrice: initial.sellingPrice,
+        stock: initial.stock,
+        minStock: initial.minStock,
+        unit: initial.unit,
+        vatApplicable: initial.vatApplicable,
+        description: initial.description || '',
+        imageUrl: initial.imageUrl || '',
       })
     } else {
       setForm(emptyForm)
     }
     setErrors({})
+    setUploadError('')
+  }
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    setUploadError('')
+    try {
+      const url = await uploadToCloudinary(file, 'karobar/products')
+      setForm((prev) => ({ ...prev, imageUrl: url }))
+    } catch (err) {
+      console.error('Product image upload failed:', err)
+      setUploadError(err.message || 'Image upload failed')
+    } finally {
+      setUploading(false)
+    }
   }
 
   const validate = () => {
@@ -58,6 +98,7 @@ export default function AddProductDrawer({ open, onClose, onSubmit, initial }) {
       stock: Number(form.stock),
       minStock: Number(form.minStock),
       vatApplicable: form.vatApplicable === true || form.vatApplicable === 'true',
+      imageUrl: form.imageUrl || '',
     })
     onClose()
   }
@@ -78,6 +119,50 @@ export default function AddProductDrawer({ open, onClose, onSubmit, initial }) {
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Product Image Upload */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">Product Image</label>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+            accept="image/*"
+            className="hidden"
+          />
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+              {form.imageUrl ? (
+                <img src={form.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+              ) : (
+                <ImageIcon className="w-6 h-6 text-slate-400" />
+              )}
+            </div>
+            <div>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {uploading ? 'Uploading...' : form.imageUrl ? 'Change Image' : 'Upload Image'}
+              </Button>
+              {form.imageUrl && (
+                <button
+                  type="button"
+                  onClick={() => setForm((prev) => ({ ...prev, imageUrl: '' }))}
+                  className="text-xs text-rose-600 hover:underline block mt-1"
+                >
+                  Remove image
+                </button>
+              )}
+            </div>
+          </div>
+          {uploadError && (
+            <p className="text-xs text-rose-600 mt-1">{uploadError}</p>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label={t('product_name')} value={form.name} onChange={set('name')} error={errors.name} required />
           <Input label={t('sku')} value={form.sku} onChange={set('sku')} error={errors.sku} required />

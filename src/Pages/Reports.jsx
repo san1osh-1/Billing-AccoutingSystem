@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { FileText, TrendingUp, PieChart, DollarSign, Calculator } from 'lucide-react'
 import useReports from '../hooks/useReports'
 import PageHeader from '../Components/ui/PageHeader'
@@ -18,11 +19,24 @@ const reportTypes = [
 ]
 
 export default function Reports() {
+  const location = useLocation()
   const { t } = useTranslation()
-  const [selectedReport, setSelectedReport] = useState('profit-loss')
+
+  const getReportFromPath = (pathname) => {
+    if (pathname.includes('balance-sheet')) return 'balance-sheet'
+    if (pathname.includes('cash-flow')) return 'cash-flow'
+    if (pathname.includes('trial-balance')) return 'trial-balance'
+    return 'profit-loss'
+  }
+
+  const [selectedReport, setSelectedReport] = useState(() => getReportFromPath(location.pathname))
   const [startDate, setStartDate] = useState('2026-01-01')
   const [endDate, setEndDate] = useState('2026-09-15')
   const { currentReport, loading, generateReport } = useReports()
+
+  useEffect(() => {
+    setSelectedReport(getReportFromPath(location.pathname))
+  }, [location.pathname])
 
   const handleGenerate = () => {
     generateReport(selectedReport, startDate, endDate)

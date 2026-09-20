@@ -12,7 +12,7 @@ export default function AddExpenseDrawer({ open, onClose, onSubmit }) {
   const [errors, setErrors] = useState({})
   const [prevOpen, setPrevOpen] = useState(open)
 
-  if (open && prevOpen !== open) {
+  if (open !== prevOpen) {
     setPrevOpen(open)
     setForm({ category: '', description: '', amount: '', method: 'cash', paidBy: 'Ram Shrestha' })
     setErrors({})

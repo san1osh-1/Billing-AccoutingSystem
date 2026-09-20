@@ -14,7 +14,7 @@ export default function AddUserDrawer({ open, onClose, onSubmit, roles, initial 
   const [prevOpen, setPrevOpen] = useState(open)
   const isEdit = Boolean(initial)
 
-  if (open && prevOpen !== open) {
+  if (open !== prevOpen) {
     setPrevOpen(open)
     setForm(initial ? { name: initial.name, email: initial.email, phone: initial.phone, roleId: initial.roleId } : emptyForm)
     setErrors({})

@@ -1,21 +1,61 @@
-import { useState, useMemo, useEffect } from 'react'
-import { initialPayments } from '../data/payment'
+import { useState, useMemo, useEffect, useCallback } from 'react'
+import { supabase } from '../lib/supabase'
 
 export default function usePayments() {
   const [payments, setPayments] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const t = setTimeout(() => { setPayments(initialPayments); setLoading(false) }, 300)
-    return () => clearTimeout(t)
+  const fetchPayments = useCallback(async () => {
+    setLoading(true)
+    const { data, error } = await supabase
+      .from('payments')
+      .select('*')
+      .order('date', { ascending: false })
+    if (error) {
+      console.error('usePayments fetch error:', error.message)
+    } else {
+      setPayments(
+        (data || []).map((p) => ({
+          id: p.id,
+          date: p.date,
+          type: p.type,
+          partyType: p.party_type,
+          partyId: p.party_id,
+          partyName: p.party_name,
+          amount: Number(p.amount),
+          method: p.method,
+          reference: p.reference,
+          notes: p.notes,
+        }))
+      )
+    }
+    setLoading(false)
   }, [])
 
-  const addPayment = (payment) => {
-    const newPayment = {
-      ...payment,
-      id: `PAY-${String(513 + payments.length).padStart(4, '0')}`,
-      date: new Date().toISOString().slice(0, 10),
+  useEffect(() => { fetchPayments() }, [fetchPayments])
+
+  const addPayment = async (payment) => {
+    const { count } = await supabase.from('payments').select('*', { count: 'exact', head: true })
+    const nextNum = String((count || payments.length) + 513).padStart(4, '0')
+    const id = `PAY-${nextNum}`
+    const date = new Date().toISOString().slice(0, 10)
+
+    const payload = {
+      id,
+      date,
+      type: payment.type,
+      party_type: payment.partyType,
+      party_id: payment.partyId || 0,
+      party_name: payment.partyName || '',
+      amount: Number(payment.amount),
+      method: payment.method,
+      reference: payment.reference || '',
+      notes: payment.notes || '',
     }
+    const { error } = await supabase.from('payments').insert([payload])
+    if (error) { console.error('addPayment error:', error.message); return null }
+
+    const newPayment = { ...payment, id, date }
     setPayments((prev) => [newPayment, ...prev])
     return newPayment
   }

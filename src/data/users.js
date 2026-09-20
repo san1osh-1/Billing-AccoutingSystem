@@ -1,7 +1,7 @@
 export const roles = [
   { id: 1, name: 'Owner', description: 'Full access to all features', permissions: ['all'] },
-  { id: 2, name: 'Admin', description: 'Administrative access', permissions: ['sales', 'purchases', 'products', 'inventory', 'customers', 'suppliers', 'expenses', 'payments', 'reports', 'users'] },
-  { id: 3, name: 'Manager', description: 'Operational management', permissions: ['sales', 'purchases', 'products', 'inventory', 'customers', 'suppliers', 'expenses', 'payments', 'reports'] },
+  { id: 2, name: 'Admin', description: 'Administrative access', permissions: ['sales', 'purchases', 'products', 'customers', 'suppliers', 'expenses', 'payments', 'reports', 'users'] },
+  { id: 3, name: 'Manager', description: 'Operational management', permissions: ['sales', 'purchases', 'products', 'customers', 'suppliers', 'expenses', 'payments', 'reports'] },
   { id: 4, name: 'Sales Staff', description: 'Sales and POS operations', permissions: ['sales', 'customers', 'products'] },
   { id: 5, name: 'Accountant', description: 'Financial management', permissions: ['accounting', 'reports', 'expenses', 'payments', 'purchases'] },
 ]
@@ -20,7 +20,6 @@ export const allPermissions = [
   { key: 'purchases', label: 'Purchases' },
   { key: 'suppliers', label: 'Suppliers' },
   { key: 'products', label: 'Products' },
-  { key: 'inventory', label: 'Inventory' },
   { key: 'expenses', label: 'Expenses' },
   { key: 'payments', label: 'Payments' },
   { key: 'accounting', label: 'Accounting' },

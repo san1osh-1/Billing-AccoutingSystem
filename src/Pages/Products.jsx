@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Edit2, Trash2, Package } from 'lucide-react'
+import { Plus, Edit2, Trash2, Package, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react'
 import useProducts from '../hooks/useProducts'
 import PageHeader from '../Components/ui/PageHeader'
 import Button from '../Components/ui/Button'
@@ -20,9 +20,9 @@ export default function Products() {
 
   const kpis = [
     { title: t('total_products'), value: all.length, icon: Package, tone: 'brand' },
-    { title: t('in_stock'), value: all.filter((p) => p.stock > p.minStock).length, tone: 'emerald' },
-    { title: t('low_stock'), value: all.filter((p) => p.stock > 0 && p.stock <= p.minStock).length, tone: 'amber' },
-    { title: t('out_of_stock'), value: all.filter((p) => p.stock === 0).length, tone: 'rose' },
+    { title: t('in_stock'), value: all.filter((p) => p.stock > p.minStock).length, icon: CheckCircle2, tone: 'emerald' },
+    { title: t('low_stock'), value: all.filter((p) => p.stock > 0 && p.stock <= p.minStock).length, icon: AlertTriangle, tone: 'amber' },
+    { title: t('out_of_stock'), value: all.filter((p) => p.stock === 0).length, icon: XCircle, tone: 'rose' },
   ]
 
   const statusKeys = { Active: 'status_active', 'Low Stock': 'status_low', 'Out of Stock': 'status_out_of_stock' }
@@ -33,9 +33,14 @@ export default function Products() {
     {
       key: 'name', label: t('product'),
       render: (r) => (
-        <div>
-          <div className="font-medium text-slate-900">{r.name}</div>
-          <div className="text-xs text-slate-500 font-mono">{r.sku}</div>
+        <div className="flex items-center gap-2.5">
+          {r.imageUrl && (
+            <img src={r.imageUrl} alt={r.name} className="w-8 h-8 rounded-md object-cover border border-slate-200 shrink-0" />
+          )}
+          <div>
+            <div className="font-medium text-slate-900">{r.name}</div>
+            <div className="text-xs text-slate-500 font-mono">{r.sku}</div>
+          </div>
         </div>
       ),
     },

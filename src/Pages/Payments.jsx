@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Plus, ArrowDownCircle, ArrowUpCircle, Wallet, Receipt } from 'lucide-react'
 import useCustomers from '../hooks/useCustomers'
 import useSuppliers from '../hooks/useSuppliers'
@@ -12,12 +13,24 @@ import RecordPaymentDrawer from '../Components/payments/RecordPaymentDrawer'
 import { useTranslation } from '../i18n/LanguageContext'
 
 export default function Payments() {
+  const location = useLocation()
   const { t, num, formatCurrency, formatDate } = useTranslation()
   const { all: customers } = useCustomers()
   const { all: suppliers } = useSuppliers()
   const { payments, loading, addPayment, kpis } = usePayments()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [filter, setFilter] = useState('all')
+
+  const getFilterFromPath = (pathname) => {
+    if (pathname.includes('received')) return 'received'
+    if (pathname.includes('made')) return 'made'
+    return 'all'
+  }
+
+  const [filter, setFilter] = useState(() => getFilterFromPath(location.pathname))
+
+  useEffect(() => {
+    setFilter(getFilterFromPath(location.pathname))
+  }, [location.pathname])
 
   const filtered = filter === 'all' ? payments : payments.filter((p) => p.type === filter)
 

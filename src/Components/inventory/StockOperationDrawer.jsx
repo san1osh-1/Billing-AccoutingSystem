@@ -15,7 +15,7 @@ export default function StockOperationDrawer({ open, onClose, onSubmit, products
   const [errors, setErrors] = useState({})
   const [prevOpen, setPrevOpen] = useState(open)
 
-  if (open && prevOpen !== open) {
+  if (open !== prevOpen) {
     setPrevOpen(open)
     setProductId(initialProduct?.id || '')
     setType('IN'); setQty(''); setReason(''); setReference(''); setErrors({})

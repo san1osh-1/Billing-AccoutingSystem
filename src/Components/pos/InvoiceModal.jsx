@@ -27,7 +27,7 @@ const Divider = ({ dashed }) => (
   <div className={`border-t my-1.5 ${dashed ? 'border-dashed border-slate-400' : 'border-slate-300'}`} />
 )
 
-export default function InvoiceModal({ open, onClose, sale }) {
+export default function InvoiceModal({ open, onClose, sale, celebrate = true }) {
   const { t, num, formatCurrency, formatDate } = useTranslation()
   const receiptRef = useRef(null)
 
@@ -58,7 +58,7 @@ export default function InvoiceModal({ open, onClose, sale }) {
     <Modal
       open={open}
       onClose={onClose}
-      title=""
+      title={celebrate ? '' : `${t('invoice_no')}: ${sale?.id || ''}`}
       size="md"
       footer={
         <div className="flex justify-end gap-2">
@@ -68,13 +68,15 @@ export default function InvoiceModal({ open, onClose, sale }) {
         </div>
       }
     >
-      <div className="text-center mb-4">
-        <div className="inline-flex w-12 h-12 rounded-full bg-emerald-50 items-center justify-center mb-2">
-          <CheckCircle2 className="w-7 h-7 text-emerald-600" />
+      {celebrate && (
+        <div className="text-center mb-4">
+          <div className="inline-flex w-12 h-12 rounded-full bg-emerald-50 items-center justify-center mb-2">
+            <CheckCircle2 className="w-7 h-7 text-emerald-600" />
+          </div>
+          <h3 className="text-lg font-bold text-slate-900">{t('sale_completed')}</h3>
+          <p className="text-sm text-slate-500">{t('invoice_recorded').replace('{id}', sale.id)}</p>
         </div>
-        <h3 className="text-lg font-bold text-slate-900">{t('sale_completed')}</h3>
-        <p className="text-sm text-slate-500">{t('invoice_recorded').replace('{id}', sale.id)}</p>
-      </div>
+      )}
 
       {/* IRD tax invoice / receipt */}
       <div

@@ -16,7 +16,7 @@ export default function JournalEntryDrawer({ open, onClose, onSubmit, accounts }
   const [errors, setErrors] = useState({})
   const [prevOpen, setPrevOpen] = useState(open)
 
-  if (open && prevOpen !== open) {
+  if (open !== prevOpen) {
     setPrevOpen(open)
     setDate(new Date().toISOString().slice(0, 10))
     setDescription(''); setReference('')
