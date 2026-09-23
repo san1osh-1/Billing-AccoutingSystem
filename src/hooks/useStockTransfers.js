@@ -1,15 +1,23 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function useStockTransfers() {
+  const { businessId } = useAuth()
   const [transfers, setTransfers] = useState([])
   const [loading, setLoading] = useState(true)
 
   const fetchTransfers = useCallback(async () => {
+    if (!businessId) {
+      setTransfers([])
+      setLoading(false)
+      return
+    }
     setLoading(true)
     const { data, error } = await supabase
       .from('stock_transfers')
       .select('*')
+      .eq('business_id', businessId)
       .order('date', { ascending: false })
     if (error) {
       console.error('useStockTransfers fetch error:', error.message)
@@ -30,18 +38,19 @@ export default function useStockTransfers() {
       )
     }
     setLoading(false)
-  }, [])
+  }, [businessId])
 
   useEffect(() => { fetchTransfers() }, [fetchTransfers])
 
   const addTransfer = async (transfer) => {
-    const { count } = await supabase.from('stock_transfers').select('*', { count: 'exact', head: true })
+    const { count } = await supabase.from('stock_transfers').select('*', { count: 'exact', head: true }).eq('business_id', businessId)
     const nextNum = String((count || transfers.length) + 13).padStart(4, '0')
     const id = `TRF-${nextNum}`
     const date = new Date().toISOString().slice(0, 10)
 
     const payload = {
       id,
+      business_id: businessId,
       date,
       product_id: transfer.productId,
       product_name: transfer.productName,

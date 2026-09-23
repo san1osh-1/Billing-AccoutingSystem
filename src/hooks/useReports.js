@@ -1,7 +1,9 @@
 import { useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function useReports() {
+  const { businessId } = useAuth()
   const [currentReport, setCurrentReport] = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -9,7 +11,29 @@ export default function useReports() {
     setLoading(true)
 
     try {
+      const scoped = {
+        from: (table) => supabase.from(table).eq('business_id', businessId),
+      }
       // Fetch sales, purchases, expenses, accounts, customers, suppliers, products in parallel
+      const queries = [
+        scoped.from('sales')
+          .select('*')
+          .gte('date', startDate || '2000-01-01')
+          .lte('date', endDate || '2099-12-31'),
+        scoped.from('purchases')
+          .select('*')
+          .gte('date', startDate || '2000-01-01')
+          .lte('date', endDate || '2099-12-31'),
+        scoped.from('expenses')
+          .select('*')
+          .gte('date', startDate || '2000-01-01')
+          .lte('date', endDate || '2099-12-31'),
+        supabase.from('chart_of_accounts').select('*'),
+        scoped.from('customers').select('*'),
+        scoped.from('suppliers').select('*'),
+        scoped.from('products').select('*'),
+      ]
+
       const [
         { data: sales },
         { data: purchases },
@@ -18,27 +42,7 @@ export default function useReports() {
         { data: customers },
         { data: suppliers },
         { data: products },
-      ] = await Promise.all([
-        supabase
-          .from('sales')
-          .select('*')
-          .gte('date', startDate || '2000-01-01')
-          .lte('date', endDate || '2099-12-31'),
-        supabase
-          .from('purchases')
-          .select('*')
-          .gte('date', startDate || '2000-01-01')
-          .lte('date', endDate || '2099-12-31'),
-        supabase
-          .from('expenses')
-          .select('*')
-          .gte('date', startDate || '2000-01-01')
-          .lte('date', endDate || '2099-12-31'),
-        supabase.from('chart_of_accounts').select('*'),
-        supabase.from('customers').select('*'),
-        supabase.from('suppliers').select('*'),
-        supabase.from('products').select('*'),
-      ])
+      ] = await Promise.all(queries)
 
       const totalSales = (sales || []).reduce((s, x) => s + Number(x.grand_total || 0), 0)
       const totalPurchases = (purchases || []).reduce((s, x) => s + Number(x.grand_total || 0), 0)
@@ -130,7 +134,7 @@ export default function useReports() {
         const totalLiabilities = liabilityItems.reduce((s, x) => s + x.amount, 0)
 
         const capitalAccount = (accounts || []).find((a) => a.code === '3000')
-        const ownerCapital = capitalAccount ? Number(capitalAccount.balance) : 2000000
+        const ownerCapital = capitalAccount ? Number(capitalAccount.balance) : 0
         const retainedEarnings = totalAssets - totalLiabilities - netProfit - ownerCapital
 
         const equityItems = [
@@ -170,9 +174,9 @@ export default function useReports() {
       } else if (type === 'cash-flow') {
         const operatingItems = [
           { name: 'Net Profit', amount: netProfit },
-          { name: 'Change in Receivables', amount: -totalReceivable * 0.2 },
-          { name: 'Change in Inventory', amount: -inventoryValuation * 0.1 },
-          { name: 'Change in Payables', amount: totalPayable * 0.15 },
+          { name: 'Change in Receivables', amount: -totalReceivable },
+          { name: 'Change in Inventory', amount: -inventoryValuation },
+          { name: 'Change in Payables', amount: totalPayable },
         ]
         const operatingTotal = operatingItems.reduce((s, x) => s + x.amount, 0)
 
@@ -204,29 +208,20 @@ export default function useReports() {
           ],
         }
       } else if (type === 'trial-balance') {
-        const tbAccounts = (accounts && accounts.length > 0)
-          ? accounts.map((a) => {
-              const bal = Number(a.balance || 0)
-              let debit = 0
-              let credit = 0
-              if (['Asset', 'Expense'].includes(a.type)) {
-                debit = bal
-              } else {
-                credit = bal
-              }
-              // Override revenue/expense with actual values if available
-              if (a.code === '4000') credit = totalSales
-              if (a.code === '5000') debit = totalPurchases
-              return { code: a.code, name: a.name, debit, credit }
-            })
-          : [
-              { code: '1000', name: 'Cash', debit: 245600, credit: 0 },
-              { code: '1100', name: 'Accounts Receivable', debit: totalReceivable, credit: 0 },
-              { code: '1200', name: 'Inventory', debit: inventoryValuation, credit: 0 },
-              { code: '2000', name: 'Accounts Payable', debit: 0, credit: totalPayable },
-              { code: '4000', name: 'Sales Revenue', debit: 0, credit: totalSales },
-              { code: '5000', name: 'Cost of Goods Sold', debit: totalPurchases, credit: 0 },
-            ]
+        const tbAccounts = (accounts || []).map((a) => {
+          const bal = Number(a.balance || 0)
+          let debit = 0
+          let credit = 0
+          if (['Asset', 'Expense'].includes(a.type)) {
+            debit = bal
+          } else {
+            credit = bal
+          }
+          // Override revenue/expense with actual values if available
+          if (a.code === '4000') credit = totalSales
+          if (a.code === '5000') debit = totalPurchases
+          return { code: a.code, name: a.name, debit, credit }
+        })
 
         const totalDebit = tbAccounts.reduce((s, a) => s + a.debit, 0)
         const totalCredit = tbAccounts.reduce((s, a) => s + a.credit, 0)
@@ -246,7 +241,7 @@ export default function useReports() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [businessId])
 
   return { currentReport, loading, generateReport }
 }

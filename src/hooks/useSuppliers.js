@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function useSuppliers() {
+  const { businessId } = useAuth()
   const [suppliers, setSuppliers] = useState([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({ search: '', status: '' })
@@ -11,6 +13,7 @@ export default function useSuppliers() {
     const { data, error } = await supabase
       .from('suppliers')
       .select('*, supplier_transactions(*)')
+      .eq('business_id', businessId)
       .order('created_at', { ascending: false })
     if (error) {
       console.error('useSuppliers fetch error:', error.message)
@@ -66,6 +69,7 @@ export default function useSuppliers() {
 
   const addSupplier = async (data) => {
     const payload = {
+      business_id: businessId,
       name: data.name,
       phone: data.phone || '',
       email: data.email || '',
@@ -112,13 +116,13 @@ export default function useSuppliers() {
     if (data.paid !== undefined) payload.paid = data.paid
     if (data.due !== undefined) payload.due = data.due
 
-    const { error } = await supabase.from('suppliers').update(payload).eq('id', id)
+    const { error } = await supabase.from('suppliers').update(payload).eq('id', id).eq('business_id', businessId)
     if (error) { console.error('updateSupplier error:', error.message); return }
     setSuppliers((prev) => prev.map((s) => s.id === id ? { ...s, ...data } : s))
   }
 
   const deleteSupplier = async (id) => {
-    const { error } = await supabase.from('suppliers').delete().eq('id', id)
+    const { error } = await supabase.from('suppliers').delete().eq('id', id).eq('business_id', businessId)
     if (error) { console.error('deleteSupplier error:', error.message); return }
     setSuppliers((prev) => prev.filter((s) => s.id !== id))
   }

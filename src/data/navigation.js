@@ -90,6 +90,22 @@ export const navigation = [
       { key: 'tax_vat_reports', label: 'Tax / VAT Reports', labelKey: 'nav_tax_vat_reports', path: '/reports/vat', icon: 'Calculator' },
     ],
   },
+  {
+    type: 'standalone',
+    key: 'users',
+    label: 'Users & Roles',
+    labelKey: 'nav_users',
+    path: '/users',
+    icon: 'Users',
+  },
+  {
+    type: 'standalone',
+    key: 'configuration',
+    label: 'Configuration',
+    labelKey: 'nav_configuration',
+    path: '/settings',
+    icon: 'Settings2',
+  },
 ]
 
 // Flattened items for lookups
@@ -101,6 +117,10 @@ export const allNavItems = navigation.flatMap((entry) =>
 export function getNavigationTitle(pathname, t) {
   if (!pathname || pathname === '/' || pathname === '/dashboard') {
     return t ? t('nav_dashboard') : 'Dashboard'
+  }
+
+  if (pathname === '/settings') {
+    return t ? t('nav_configuration') : 'Configuration'
   }
 
   // Exact match first

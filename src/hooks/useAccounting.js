@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function useAccounting() {
+  const { businessId } = useAuth()
   const [accounts, setAccounts] = useState([])
   const [journal, setJournal] = useState([])
   const [customerLedgerData, setCustomerLedgerData] = useState([])
@@ -10,17 +12,28 @@ export default function useAccounting() {
 
   const fetchAll = useCallback(async () => {
     setLoading(true)
+    const queries = [
+      supabase.from('chart_of_accounts').select('*').order('code'),
+    ]
+    if (businessId) {
+      queries.push(
+        supabase.from('journal_entries').select('*, journal_lines(*)').eq('business_id', businessId).order('date', { ascending: false }),
+        supabase.from('customer_transactions').select('*, customers(id, name)').eq('business_id', businessId).order('date', { ascending: false }),
+        supabase.from('supplier_transactions').select('*, suppliers(id, name)').eq('business_id', businessId).order('date', { ascending: false }),
+      )
+    } else {
+      queries.push(
+        Promise.resolve({ data: [], error: null }),
+        Promise.resolve({ data: [], error: null }),
+        Promise.resolve({ data: [], error: null }),
+      )
+    }
     const [
       { data: accts, error: acctsErr },
       { data: entries, error: entriesErr },
       { data: custTx, error: custErr },
       { data: suppTx, error: suppErr },
-    ] = await Promise.all([
-      supabase.from('chart_of_accounts').select('*').order('code'),
-      supabase.from('journal_entries').select('*, journal_lines(*)').order('date', { ascending: false }),
-      supabase.from('customer_transactions').select('*, customers(id, name)').order('date', { ascending: false }),
-      supabase.from('supplier_transactions').select('*, suppliers(id, name)').order('date', { ascending: false }),
-    ])
+    ] = await Promise.all(queries)
 
     if (acctsErr) console.error('chart_of_accounts error:', acctsErr.message)
     if (entriesErr) console.error('journal_entries error:', entriesErr.message)
@@ -98,17 +111,18 @@ export default function useAccounting() {
     setSupplierLedgerData(Object.values(suppMap))
 
     setLoading(false)
-  }, [])
+  }, [businessId])
 
   useEffect(() => { fetchAll() }, [fetchAll])
 
   const addJournalEntry = async (entry) => {
-    const { count } = await supabase.from('journal_entries').select('*', { count: 'exact', head: true })
+    const { count } = await supabase.from('journal_entries').select('*', { count: 'exact', head: true }).eq('business_id', businessId)
     const nextNum = String((count || journal.length) + 157).padStart(4, '0')
     const id = `JRN-${nextNum}`
 
     const { error: entryErr } = await supabase.from('journal_entries').insert([{
       id,
+      business_id: businessId,
       date: entry.date || new Date().toISOString().slice(0, 10),
       description: entry.description || '',
       reference: entry.reference || '',

@@ -1,5 +1,9 @@
 import { Navigate } from 'react-router-dom'
 import MainLayout from '../Components/Layout/MainLayout'
+import ProtectedRoute from '../Components/auth/ProtectedRoute'
+import PublicRoute from '../Components/auth/PublicRoute'
+import Login from '../Pages/Login'
+import Signup from '../Pages/Signup'
 import Dashboard from '../Pages/Dashboard'
 import Sales from '../Pages/Sales'
 import SalesInvoices from '../Pages/SalesInvoices'
@@ -23,9 +27,32 @@ import Users from '../Pages/Users'
 import Settings from '../Pages/Settings'
 
 const routes = [
+  // ── Public auth routes (redirect to /dashboard if already logged in) ──
+  {
+    path: '/login',
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: '/signup',
+    element: (
+      <PublicRoute>
+        <Signup />
+      </PublicRoute>
+    ),
+  },
+
+  // ── Protected app routes (redirect to /login if not logged in) ──
   {
     path: '/',
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <Dashboard /> },
@@ -76,12 +103,15 @@ const routes = [
       { path: 'reports/inventory', element: <OperationalReports /> },
       { path: 'reports/vat', element: <OperationalReports /> },
 
-      // Retain fallback / direct utility paths
+      // Utility
       { path: 'payments', element: <Payments /> },
       { path: 'users', element: <Users /> },
       { path: 'settings', element: <Settings /> },
     ],
   },
+
+  // ── Catch-all: unknown paths go to /dashboard (which will redirect to /login if needed) ──
+  { path: '*', element: <Navigate to="/dashboard" replace /> },
 ]
 
 export default routes

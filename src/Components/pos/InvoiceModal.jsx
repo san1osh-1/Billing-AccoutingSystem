@@ -5,7 +5,7 @@ import jsPDF from 'jspdf'
 import Modal from '../ui/Modal'
 import Button from '../ui/Button'
 import { useTranslation } from '../../i18n/LanguageContext'
-import { business } from '../../data/business'
+import useBusinessSettings from '../../hooks/useBusinessSettings'
 import { adToBsParts } from '../../utils/bs'
 
 const timeNow = () =>
@@ -29,6 +29,7 @@ const Divider = ({ dashed }) => (
 
 export default function InvoiceModal({ open, onClose, sale, celebrate = true }) {
   const { t, num, formatCurrency, formatDate } = useTranslation()
+  const { settings } = useBusinessSettings()
   const receiptRef = useRef(null)
 
   const handlePrint = () => window.print()
@@ -84,10 +85,10 @@ export default function InvoiceModal({ open, onClose, sale, celebrate = true }) 
         id="receipt-print-area"
         className="mx-auto w-[320px] font-mono text-[11px] leading-relaxed text-slate-900 bg-white border border-dashed border-slate-300 p-4 rounded-lg select-none"
       >
-        <div className="text-center text-sm font-bold uppercase">{business.name}</div>
-        <div className="text-center">{business.address}</div>
-        <div className="text-center">Tel: {business.phone}</div>
-        <div className="text-center">PAN/VAT: {business.panVat}</div>
+        <div className="text-center text-sm font-bold uppercase">{settings.name}</div>
+        <div className="text-center">{settings.address}</div>
+        <div className="text-center">Tel: {settings.phone}</div>
+        <div className="text-center">PAN/VAT: {settings.panVat}</div>
 
         <Divider dashed />
 

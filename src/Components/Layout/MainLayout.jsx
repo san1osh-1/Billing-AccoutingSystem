@@ -2,14 +2,17 @@ import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Header from './Header'
-import { navigation, getNavigationTitle } from '../../data/navigation'
+import ForcePasswordChangeModal from '../auth/ForcePasswordChangeModal'
+import { getNavigationTitle } from '../../data/navigation'
 import { useTranslation } from '../../i18n/LanguageContext'
+import { useAuth } from '../../context/AuthContext'
 
 export default function MainLayout() {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
   const { t } = useTranslation()
+  const { mustChangePassword, user } = useAuth()
 
   const title = getNavigationTitle(location.pathname, t)
 
@@ -28,6 +31,11 @@ export default function MainLayout() {
           <Outlet />
         </main>
       </div>
+
+      <ForcePasswordChangeModal
+        open={Boolean(mustChangePassword)}
+        email={user?.email}
+      />
     </div>
   )
 }

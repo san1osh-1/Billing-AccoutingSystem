@@ -151,37 +151,21 @@ export default function OperationalReports() {
 
   const netVat = salesAgg.vat - purchaseAgg.vat
 
-  const activeTab = tabs.find((x) => x.key === tab)
+  const reportMeta = {
+    sales: { titleKey: 'nav_sales_reports', subtitleKey: 'sales_reports_subtitle' },
+    purchases: { titleKey: 'nav_purchase_reports', subtitleKey: 'purchase_reports_subtitle' },
+    inventory: { titleKey: 'nav_inventory_reports', subtitleKey: 'inventory_reports_subtitle' },
+    vat: { titleKey: 'nav_tax_vat_reports', subtitleKey: 'vat_reports_subtitle' },
+  }
+
+  const currentMeta = reportMeta[tab] || reportMeta.sales
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('nav_reports_analytics')} subtitle={activeTab ? t(activeTab.subtitleKey) : t('operations_page_subtitle')} />
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {tabs.map((r) => {
-          const Icon = r.icon
-          const isSelected = tab === r.key
-          return (
-            <button
-              key={r.key}
-              onClick={() => setTab(r.key)}
-              className={`p-4 rounded-xl border text-left transition ${
-                isSelected
-                  ? 'bg-brand-50 border-brand-300 ring-2 ring-brand-500/20'
-                  : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-              }`}
-            >
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${
-                isSelected ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600'
-              }`}>
-                <Icon className="w-5 h-5" />
-              </div>
-              <h3 className="text-sm font-semibold text-slate-900">{t(r.labelKey)}</h3>
-              <p className="text-xs text-slate-500 mt-1">{t(r.subtitleKey)}</p>
-            </button>
-          )
-        })}
-      </div>
+      <PageHeader
+        title={t(currentMeta.titleKey)}
+        subtitle={t(currentMeta.subtitleKey)}
+      />
 
       {tab === 'sales' && (
         <>

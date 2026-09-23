@@ -56,25 +56,62 @@ on conflict (id) do nothing;
 --  TABLE: app_users  (app-level users, not auth.users)
 -- ============================================================
 create table if not exists public.app_users (
-  id          serial primary key,
-  name        text not null,
-  email       text not null unique,
-  phone       text default '',
-  role_id     int references public.roles(id),
-  role_name   text default '',
-  status      text default 'Active',
-  last_login  text default 'Never',
-  created_at  date default current_date
+  id                   serial primary key,
+  business_id          int default 1 references public.business_settings(id),
+  name                 text not null,
+  email                text not null unique,
+  password_hash        text default '',
+  phone                text default '',
+  role_id              int references public.roles(id),
+  role_name            text default '',
+  permissions          jsonb default '[]'::jsonb,
+  status               text default 'Active',
+  must_change_password boolean default false,
+  is_verified          boolean default true,
+  first_logged_in_at   timestamptz,
+  last_login           text default 'Never',
+  created_at           timestamptz default now()
 );
 alter table public.app_users disable row level security;
 
-insert into public.app_users (id, name, email, phone, role_id, role_name, status, last_login, created_at) values
-  (1, 'Ram Shrestha',   'ram@hisaabkit.com',    '9841234567', 1, 'Owner',       'Active',   '2026-09-15 09:30', '2024-01-01'),
-  (2, 'Sita Devi',      'sita@hisaabkit.com',   '9851234567', 4, 'Sales Staff', 'Active',   '2026-09-15 10:15', '2025-03-15'),
-  (3, 'Hari Bahadur',   'hari@hisaabkit.com',   '9861234567', 5, 'Accountant',  'Active',   '2026-09-14 16:45', '2025-05-20'),
-  (4, 'Gita Maharjan',  'gita@hisaabkit.com',   '9871234567', 3, 'Manager',     'Active',   '2026-09-15 08:00', '2025-06-10'),
-  (5, 'Krishna Tamang', 'krishna@hisaabkit.com','9881234567', 4, 'Sales Staff', 'Inactive', '2026-08-20 14:30', '2025-07-01')
+insert into public.app_users (id, name, email, password_hash, phone, role_id, role_name, status, last_login, created_at) values
+  (1, 'Ram Shrestha',   'ram@hisaabkit.com',    'password123', '9841234567', 1, 'Owner',       'Active',   '2026-09-15 09:30', '2024-01-01'),
+  (2, 'Sita Devi',      'sita@hisaabkit.com',   'password123', '9851234567', 4, 'Sales Staff', 'Active',   '2026-09-15 10:15', '2025-03-15'),
+  (3, 'Hari Bahadur',   'hari@hisaabkit.com',   'password123', '9861234567', 5, 'Accountant',  'Active',   '2026-09-14 16:45', '2025-05-20'),
+  (4, 'Gita Maharjan',  'gita@hisaabkit.com',   'password123', '9871234567', 3, 'Manager',     'Active',   '2026-09-15 08:00', '2025-06-10'),
+  (5, 'Krishna Tamang', 'krishna@hisaabkit.com','password123', '9881234567', 4, 'Sales Staff', 'Inactive', '2026-08-20 14:30', '2025-07-01')
 on conflict (id) do nothing;
+
+-- ============================================================
+--  TABLE: verification_codes
+-- ============================================================
+create table if not exists public.verification_codes (
+  id         serial primary key,
+  email      text not null,
+  code       text not null,
+  purpose    text default 'signup',
+  expires_at timestamptz not null,
+  used       boolean default false,
+  created_at timestamptz default now()
+);
+alter table public.verification_codes disable row level security;
+
+-- ============================================================
+--  TABLE: categories  (user-defined product categories)
+-- ============================================================
+create table if not exists public.categories (
+  id          serial primary key,
+  business_id int default 1 references public.business_settings(id),
+  name        text not null,
+  created_at  timestamptz default now(),
+  unique (business_id, name)
+);
+alter table public.categories disable row level security;
+
+insert into public.categories (business_id, name) values
+  (1, 'Groceries'), (1, 'Beverages'), (1, 'Personal Care'), (1, 'Stationery'),
+  (1, 'Electronics'), (1, 'Dairy'), (1, 'Snacks'), (1, 'Household')
+on conflict (business_id, name) do nothing;
 
 -- ============================================================
 --  TABLE: products
@@ -249,6 +286,7 @@ on conflict (id) do nothing;
 -- ============================================================
 create table if not exists public.supplier_transactions (
   id          serial primary key,
+  business_id int default 1 references public.business_settings(id),
   supplier_id int references public.suppliers(id) on delete cascade,
   reference   text default '',
   date        date default current_date,
@@ -475,6 +513,7 @@ on conflict (id) do nothing;
 -- ============================================================
 create table if not exists public.stock_history (
   id           serial primary key,
+  business_id  int default 1 references public.business_settings(id),
   date         date default current_date,
   product_id   int default 0,
   product_name text default '',
@@ -500,6 +539,7 @@ insert into public.stock_history (date, product_id, product_name, type, qty, ref
 -- ============================================================
 create table if not exists public.stock_adjustments (
   id           text primary key,
+  business_id  int default 1 references public.business_settings(id),
   date         date default current_date,
   product_id   int default 0,
   product_name text default '',
@@ -525,6 +565,7 @@ on conflict (id) do nothing;
 -- ============================================================
 create table if not exists public.stock_transfers (
   id           text primary key,
+  business_id  int default 1 references public.business_settings(id),
   date         date default current_date,
   product_id   int default 0,
   product_name text default '',
@@ -559,22 +600,22 @@ create table if not exists public.chart_of_accounts (
 alter table public.chart_of_accounts disable row level security;
 
 insert into public.chart_of_accounts (id, code, name, type, balance) values
-  ('1000', '1000', 'Cash',               'Asset',   245600),
-  ('1010', '1010', 'Bank - Nabil Bank',  'Asset',   1250000),
-  ('1020', '1020', 'Bank - NIC Asia',    'Asset',   890000),
-  ('1100', '1100', 'Accounts Receivable','Asset',   384300),
-  ('1200', '1200', 'Inventory',          'Asset',   1850000),
-  ('2000', '2000', 'Accounts Payable',   'Liability',370000),
-  ('2100', '2100', 'VAT Payable',        'Liability',125400),
-  ('3000', '3000', 'Owner''s Capital',   'Equity',  2000000),
-  ('3100', '3100', 'Retained Earnings',  'Equity',  856850),
-  ('4000', '4000', 'Sales Revenue',      'Income',  8456000),
-  ('5000', '5000', 'Cost of Goods Sold', 'COGS',    5123000),
-  ('6000', '6000', 'Rent Expense',       'Expense', 270000),
-  ('6100', '6100', 'Salary Expense',     'Expense', 220000),
-  ('6200', '6200', 'Utilities Expense',  'Expense', 84500),
-  ('6300', '6300', 'Marketing Expense',  'Expense', 45000),
-  ('6900', '6900', 'Other Expenses',     'Expense', 144950)
+  ('1000', '1000', 'Cash',               'Asset',   0),
+  ('1010', '1010', 'Bank - Nabil Bank',  'Asset',   0),
+  ('1020', '1020', 'Bank - NIC Asia',    'Asset',   0),
+  ('1100', '1100', 'Accounts Receivable','Asset',   0),
+  ('1200', '1200', 'Inventory',          'Asset',   0),
+  ('2000', '2000', 'Accounts Payable',   'Liability',0),
+  ('2100', '2100', 'VAT Payable',        'Liability',0),
+  ('3000', '3000', 'Owner''s Capital',   'Equity',  0),
+  ('3100', '3100', 'Retained Earnings',  'Equity',  0),
+  ('4000', '4000', 'Sales Revenue',      'Income',  0),
+  ('5000', '5000', 'Cost of Goods Sold', 'COGS',    0),
+  ('6000', '6000', 'Rent Expense',       'Expense', 0),
+  ('6100', '6100', 'Salary Expense',     'Expense', 0),
+  ('6200', '6200', 'Utilities Expense',  'Expense', 0),
+  ('6300', '6300', 'Marketing Expense',  'Expense', 0),
+  ('6900', '6900', 'Other Expenses',     'Expense', 0)
 on conflict (id) do nothing;
 
 -- ============================================================
@@ -582,6 +623,7 @@ on conflict (id) do nothing;
 -- ============================================================
 create table if not exists public.journal_entries (
   id          text primary key,
+  business_id int default 1 references public.business_settings(id),
   date        date default current_date,
   description text default '',
   reference   text default '',
@@ -638,6 +680,7 @@ select setval('public.sale_return_items_id_seq', (select max(id) from public.sal
 select setval('public.purchase_items_id_seq',  (select max(id) from public.purchase_items));
 select setval('public.stock_history_id_seq',   (select max(id) from public.stock_history));
 select setval('public.journal_lines_id_seq',   (select max(id) from public.journal_lines));
+select setval('public.categories_id_seq',      (select max(id) from public.categories));
 
 -- ============================================================
 --  DONE — Schema and seed data loaded successfully!

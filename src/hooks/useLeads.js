@@ -1,8 +1,9 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
-import { demoLeads } from '../data/leads'
+import { useAuth } from '../context/AuthContext'
 
 export default function useLeads() {
+  const { businessId } = useAuth()
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({ search: '', source: '', status: '' })
@@ -12,14 +13,14 @@ export default function useLeads() {
     const { data, error } = await supabase
       .from('leads')
       .select('*')
+      .eq('business_id', businessId)
       .order('date', { ascending: false })
 
     if (error) {
-      console.warn('useLeads fetch error, falling back to demo leads:', error.message)
-      setLeads(demoLeads)
+      console.warn('useLeads fetch error:', error.message)
+      setLeads([])
     } else if (!data || data.length === 0) {
-      // If table is empty yet, fallback to demo leads for a seamless preview
-      setLeads(demoLeads)
+      setLeads([])
     } else {
       setLeads(
         data.map((l) => ({
@@ -38,7 +39,7 @@ export default function useLeads() {
       )
     }
     setLoading(false)
-  }, [])
+  }, [businessId])
 
   useEffect(() => {
     fetchLeads()
@@ -84,6 +85,7 @@ export default function useLeads() {
 
     const payload = {
       id,
+      business_id: businessId,
       name: data.name,
       source: data.source || 'facebook',
       account_name: data.accountName || '',
@@ -135,7 +137,7 @@ export default function useLeads() {
     if (data.date !== undefined) payload.date = data.date
     if (data.notes !== undefined) payload.notes = data.notes
 
-    const { error } = await supabase.from('leads').update(payload).eq('id', id)
+    const { error } = await supabase.from('leads').update(payload).eq('id', id).eq('business_id', businessId)
     if (error) {
       console.warn('Supabase updateLead error, updated locally:', error.message)
     }
@@ -155,7 +157,7 @@ export default function useLeads() {
   }
 
   const deleteLead = async (id) => {
-    const { error } = await supabase.from('leads').delete().eq('id', id)
+    const { error } = await supabase.from('leads').delete().eq('id', id).eq('business_id', businessId)
     if (error) {
       console.warn('Supabase deleteLead error, removed locally:', error.message)
     }

@@ -1,18 +1,28 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function useSalesReturns() {
+  const { businessId } = useAuth()
   const [returns, setReturns] = useState([])
   const [loading, setLoading] = useState(true)
 
   const fetchReturns = useCallback(async () => {
+    if (!businessId) {
+      setReturns([])
+      setLoading(false)
+      return
+    }
     setLoading(true)
     const { data, error } = await supabase
       .from('sale_returns')
       .select('*, sale_return_items(*)')
+      .eq('business_id', businessId)
       .order('created_at', { ascending: false })
+
     if (error) {
       console.error('useSalesReturns fetch error:', error.message)
+      setReturns([])
     } else {
       setReturns(
         (data || []).map((r) => ({
@@ -37,30 +47,42 @@ export default function useSalesReturns() {
       )
     }
     setLoading(false)
-  }, [])
+  }, [businessId])
 
-  useEffect(() => { fetchReturns() }, [fetchReturns])
+  useEffect(() => {
+    fetchReturns()
+  }, [fetchReturns])
 
   const addReturn = async (ret) => {
-    const { count } = await supabase.from('sale_returns').select('*', { count: 'exact', head: true })
+    const { count } = await supabase
+      .from('sale_returns')
+      .select('*', { count: 'exact', head: true })
+      .eq('business_id', businessId)
+
     const nextNum = (count || returns.length) + 1004
     const id = `CN-${nextNum}`
     const date = new Date().toISOString().slice(0, 10)
 
-    const { error } = await supabase.from('sale_returns').insert([{
-      id,
-      sale_id: ret.saleId || null,
-      customer_id: ret.customerId || 0,
-      customer_name: ret.customerName || 'Walk-in Customer',
-      date,
-      subtotal: ret.subtotal,
-      vat: ret.vat,
-      grand_total: ret.grandTotal,
-      reason: ret.reason || '',
-      status: ret.status || 'Refunded',
-      cashier: ret.cashier || '',
-    }])
-    if (error) { console.error('addReturn error:', error.message); return null }
+    const { error } = await supabase.from('sale_returns').insert([
+      {
+        id,
+        business_id: businessId,
+        sale_id: ret.saleId || null,
+        customer_id: ret.customerId || 0,
+        customer_name: ret.customerName || 'Walk-in Customer',
+        date,
+        subtotal: ret.subtotal,
+        vat: ret.vat,
+        grand_total: ret.grandTotal,
+        reason: ret.reason || '',
+        status: ret.status || 'Refunded',
+        cashier: ret.cashier || '',
+      },
+    ])
+    if (error) {
+      console.error('addReturn error:', error.message)
+      return null
+    }
 
     if (ret.items && ret.items.length > 0) {
       const items = ret.items.map((i) => ({

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   Users,
@@ -35,10 +35,13 @@ import {
   Calculator,
   ChevronDown,
   ChevronLeft,
+  LogOut,
+  Settings2,
   X,
 } from 'lucide-react'
 import { navigation } from '../../data/navigation'
 import { useTranslation } from '../../i18n/LanguageContext'
+import { useAuth } from '../../context/AuthContext'
 
 const iconMap = {
   LayoutDashboard,
@@ -73,13 +76,21 @@ const iconMap = {
   PieChart,
   Activity,
   Calculator,
+  Settings2,
 }
 
 export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
   const location = useLocation()
+  const navigate = useNavigate()
   const { t } = useTranslation()
+  const { user, business, logout, hasPermission } = useAuth()
   const [activeFlyout, setActiveFlyout] = useState(null)
   const flyoutTimerRef = useRef(null)
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login', { replace: true })
+  }
 
   // Track expanded state for each module
   const [openModules, setOpenModules] = useState(() => {
@@ -195,11 +206,36 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
           </button>
         </div>
 
+        {/* Current Business Card */}
+        <div className="px-2.5 pt-2.5 pb-2 border-b border-slate-100 shrink-0">
+          {(!collapsed || mobileOpen) ? (
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 transition-colors flex items-center gap-2 group cursor-pointer">
+              <div className="min-w-0 flex-1">
+                <div className="font-semibold text-slate-900 text-xs leading-tight truncate">
+                  {business?.name || user?.businessName || 'My Business'}
+                </div>
+                <div className="text-[10px] font-medium text-slate-400 mt-0.5 leading-none">
+                  Current Business
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div
+              className="p-2 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              title={`${business?.name || user?.businessName || 'Current Business'} (Current Business)`}
+            >
+              <Building2 className="w-4 h-4 text-slate-500 shrink-0" />
+            </div>
+          )}
+        </div>
+
         {/* Navigation Body */}
         <nav className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin py-3 px-2.5 space-y-1">
           {navigation.map((entry) => {
-            // ── Standalone item (Dashboard) ──
+            // ── Standalone item (Dashboard, Users, Settings) ──
             if (entry.type === 'standalone') {
+              if (entry.key !== 'dashboard' && !hasPermission(entry.key)) return null
+
               const Icon = iconMap[entry.icon] || LayoutDashboard
               const label = t(entry.labelKey) || entry.label
               const active = isItemActive(entry.path)
@@ -237,10 +273,13 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
             }
 
             // ── Expandable Module Group (CRM, Sales & POS, Purchase, Inventory, Accounting, Reports) ──
+            const allowedItems = (entry.items || []).filter((item) => hasPermission(item.key))
+            if (allowedItems.length === 0) return null
+
             const ModuleIcon = iconMap[entry.icon] || Boxes
             const moduleLabel = t(entry.labelKey) || entry.label
             const isOpen = openModules[entry.key]
-            const hasActiveChild = isModuleActive(entry)
+            const hasActiveChild = allowedItems.some((item) => isItemActive(item.path))
 
             return (
               <div
@@ -306,7 +345,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
                       {moduleLabel}
                     </div>
                     <div className="space-y-0.5">
-                      {entry.items.map((subItem) => {
+                      {allowedItems.map((subItem) => {
                         const SubIcon = iconMap[subItem.icon] || ModuleIcon
                         const subLabel = t(subItem.labelKey) || subItem.label
                         const active = isItemActive(subItem.path)
@@ -345,7 +384,7 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
                 {/* Expanded Submenu List */}
                 {(!collapsed || mobileOpen) && isOpen && (
                   <div className="mt-1 mb-1 pl-3 ml-4 border-l border-slate-200 space-y-0.5 animate-in fade-in duration-150">
-                    {entry.items.map((subItem) => {
+                    {allowedItems.map((subItem) => {
                       const SubIcon = iconMap[subItem.icon] || ModuleIcon
                       const subLabel = t(subItem.labelKey) || subItem.label
                       const active = isItemActive(subItem.path)
@@ -383,26 +422,35 @@ export default function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobile
           })}
         </nav>
 
-        {/* Sidebar Footer (Profile) */}
+        {/* Sidebar Footer (Profile + Logout) */}
         <div className="p-3 border-t border-slate-200 shrink-0 bg-slate-50/50">
           <div
             className={`flex items-center gap-3 p-1.5 rounded-lg ${
-              collapsed && !mobileOpen ? 'justify-center p-1' : ''
+              collapsed && !mobileOpen ? 'justify-center flex-col p-1 gap-2' : ''
             }`}
           >
-            <div className="shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xs shadow-2xs">
-              RS
+            <div className="shrink-0 w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xs shadow-2xs uppercase">
+              {user?.name ? user.name.slice(0, 2) : 'RS'}
             </div>
             {(!collapsed || mobileOpen) && (
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-semibold text-slate-900 leading-tight truncate">
-                  Ram Shrestha
+                  {user?.name || 'Ram Shrestha'}
                 </div>
                 <div className="text-[11px] font-medium text-slate-500 leading-tight truncate">
-                  {t('owner')}
+                  {user?.email || t('owner')}
                 </div>
               </div>
             )}
+            <button
+              onClick={handleLogout}
+              title="Sign out"
+              className={`shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors ${
+                collapsed && !mobileOpen ? '' : 'ml-auto'
+              }`}
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </aside>

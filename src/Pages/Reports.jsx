@@ -34,8 +34,12 @@ export default function Reports() {
   const [endDate, setEndDate] = useState('2026-09-15')
   const { currentReport, loading, generateReport } = useReports()
 
+  const currentType = reportTypes.find((r) => r.key === selectedReport) || reportTypes[0]
+
   useEffect(() => {
-    setSelectedReport(getReportFromPath(location.pathname))
+    const r = getReportFromPath(location.pathname)
+    setSelectedReport(r)
+    generateReport(r, startDate, endDate)
   }, [location.pathname])
 
   const handleGenerate = () => {
@@ -49,36 +53,9 @@ export default function Reports() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={t('nav_reports')}
-        subtitle={t('reports_page_subtitle')}
+        title={t(currentType.labelKey)}
+        subtitle={t(currentType.descKey)}
       />
-
-      {/* Report type selector */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {reportTypes.map((r) => {
-          const Icon = r.icon
-          const isSelected = selectedReport === r.key
-          return (
-            <button
-              key={r.key}
-              onClick={() => setSelectedReport(r.key)}
-              className={`p-4 rounded-xl border text-left transition ${
-                isSelected
-                  ? 'bg-brand-50 border-brand-300 ring-2 ring-brand-500/20'
-                  : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
-              }`}
-            >
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${
-                isSelected ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600'
-              }`}>
-                <Icon className="w-5 h-5" />
-              </div>
-              <h3 className="text-sm font-semibold text-slate-900">{t(r.labelKey)}</h3>
-              <p className="text-xs text-slate-500 mt-1">{t(r.descKey)}</p>
-            </button>
-          )
-        })}
-      </div>
 
       {/* Filters */}
       <ReportFilters

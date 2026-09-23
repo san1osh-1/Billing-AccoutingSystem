@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function useProducts() {
+  const { businessId } = useAuth()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({ search: '', category: '', stockStatus: '' })
@@ -11,6 +13,7 @@ export default function useProducts() {
     const { data, error } = await supabase
       .from('products')
       .select('*')
+      .eq('business_id', businessId)
       .order('created_at', { ascending: false })
     if (error) {
       console.error('useProducts fetch error:', error.message)
@@ -36,7 +39,7 @@ export default function useProducts() {
       )
     }
     setLoading(false)
-  }, [])
+  }, [businessId])
 
   useEffect(() => { fetchProducts() }, [fetchProducts])
 
@@ -60,6 +63,7 @@ export default function useProducts() {
 
   const addProduct = async (data) => {
     const payload = {
+      business_id: businessId,
       name: data.name,
       sku: data.sku,
       category: data.category,
@@ -115,7 +119,7 @@ export default function useProducts() {
       payload.status = deriveStatus(stock, minStock)
     }
 
-    const { error } = await supabase.from('products').update(payload).eq('id', id)
+    const { error } = await supabase.from('products').update(payload).eq('id', id).eq('business_id', businessId)
     if (error) { console.error('updateProduct error:', error.message); return }
 
     setProducts((prev) => prev.map((p) =>
@@ -134,7 +138,7 @@ export default function useProducts() {
   }
 
   const deleteProduct = async (id) => {
-    const { error } = await supabase.from('products').delete().eq('id', id)
+    const { error } = await supabase.from('products').delete().eq('id', id).eq('business_id', businessId)
     if (error) { console.error('deleteProduct error:', error.message); return }
     setProducts((prev) => prev.filter((p) => p.id !== id))
   }

@@ -4,9 +4,10 @@ import Drawer from '../ui/Drawer'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 import Select from '../ui/Select'
-import { categories, units } from '../../data/products'
+import useCategories from '../../hooks/useCategories'
+import { units } from '../../data/products'
 import { uploadToCloudinary } from '../../lib/cloudinary'
-import { Upload, Image as ImageIcon, X } from 'lucide-react'
+import { Upload, Image as ImageIcon, X, Plus } from 'lucide-react'
 
 const emptyForm = {
   name: '',
@@ -25,11 +26,15 @@ const emptyForm = {
 
 export default function AddProductDrawer({ open, onClose, onSubmit, initial }) {
   const { t } = useTranslation()
+  const { categories, addCategory } = useCategories()
   const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState({})
   const [prevOpen, setPrevOpen] = useState(open)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
+  const [addingCategory, setAddingCategory] = useState(false)
+  const [newCategory, setNewCategory] = useState('')
+  const [catError, setCatError] = useState('')
   const fileInputRef = useRef(null)
   const isEdit = Boolean(initial)
 
@@ -105,6 +110,21 @@ export default function AddProductDrawer({ open, onClose, onSubmit, initial }) {
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
 
+  const quickAddCategory = async () => {
+    const name = newCategory.trim()
+    if (!name) {
+      setCatError(t('category_name_required'))
+      return
+    }
+    const created = await addCategory(name)
+    setForm((prev) => ({ ...prev, category: created?.name || name }))
+    setNewCategory('')
+    setAddingCategory(false)
+    setCatError('')
+  }
+
+  const categoryOptions = new Set(categories.map((c) => c.name))
+
   return (
     <Drawer
       open={open}
@@ -166,10 +186,42 @@ export default function AddProductDrawer({ open, onClose, onSubmit, initial }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label={t('product_name')} value={form.name} onChange={set('name')} error={errors.name} required />
           <Input label={t('sku')} value={form.sku} onChange={set('sku')} error={errors.sku} required />
-          <Select label={t('category')} value={form.category} onChange={set('category')} error={errors.category} required>
-            <option value="">{t('select_category')}</option>
-            {categories.map((c) => <option key={c} value={c}>{c}</option>)}
-          </Select>
+          <div className="space-y-1.5">
+            <div className="flex items-end gap-2">
+              <div className="flex-1">
+                <Select label={t('category')} value={form.category} onChange={set('category')} error={errors.category} required>
+                  <option value="">{t('select_category')}</option>
+                  {form.category && !categoryOptions.has(form.category) && <option value={form.category}>{form.category}</option>}
+                  {categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
+                </Select>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setAddingCategory((v) => !v); setNewCategory(''); setCatError('') }}
+                className={`flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg border transition ${
+                  addingCategory ? 'border-brand-500 text-brand-600 bg-brand-50' : 'border-slate-200 text-slate-500 hover:border-brand-500 hover:text-brand-600'
+                }`}
+                aria-label={t('add_category')}
+                title={t('add_category')}
+              >
+                {addingCategory ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              </button>
+            </div>
+            {addingCategory && (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newCategory}
+                  onChange={(e) => { setNewCategory(e.target.value); setCatError('') }}
+                  onKeyDown={(e) => e.key === 'Enter' && quickAddCategory()}
+                  placeholder={t('new_category')}
+                  className="h-9 min-w-0 flex-1 px-2 rounded-lg border border-slate-200 bg-white text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                />
+                <Button type="button" size="sm" onClick={quickAddCategory}>{t('add')}</Button>
+              </div>
+            )}
+            {catError && <p className="text-xs text-rose-600">{catError}</p>}
+          </div>
           <Input label={t('brand')} value={form.brand} onChange={set('brand')} />
           <Input label={t('purchase_price_rs')} type="number" min="0" step="0.01" value={form.purchasePrice} onChange={set('purchasePrice')} error={errors.purchasePrice} required />
           <Input label={t('selling_price_rs')} type="number" min="0" step="0.01" value={form.sellingPrice} onChange={set('sellingPrice')} error={errors.sellingPrice} required />

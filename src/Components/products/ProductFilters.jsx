@@ -1,10 +1,11 @@
-import { categories } from '../../data/products'
+import useCategories from '../../hooks/useCategories'
 import { useTranslation } from '../../i18n/LanguageContext'
 import FilterBar from '../ui/FilterBar'
 import Select from '../ui/Select'
 
 export default function ProductFilters({ filters, setFilters }) {
   const { t } = useTranslation()
+  const { categories } = useCategories()
   const clear = () => setFilters({ search: '', category: '', stockStatus: '' })
 
   return (
@@ -20,7 +21,7 @@ export default function ProductFilters({ filters, setFilters }) {
         className="w-44"
       >
         <option value="">{t('category_all')}</option>
-        {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+        {categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
       </Select>
       <Select
         value={filters.stockStatus}

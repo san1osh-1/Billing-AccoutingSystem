@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Search, Plus, Package } from 'lucide-react'
-import { categories } from '../../data/products'
+import useCategories from '../../hooks/useCategories'
 import { useTranslation } from '../../i18n/LanguageContext'
 
 export default function ProductGrid({ products, onAddToCart }) {
   const { t, num, formatCurrency } = useTranslation()
+  const { categories } = useCategories()
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('')
 
@@ -43,13 +44,13 @@ export default function ProductGrid({ products, onAddToCart }) {
           </button>
           {categories.map((c) => (
             <button
-              key={c}
-              onClick={() => setCategory(c)}
+              key={c.id}
+              onClick={() => setCategory(c.name)}
               className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition ${
-                category === c ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                category === c.name ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              {c}
+              {c.name}
             </button>
           ))}
         </div>

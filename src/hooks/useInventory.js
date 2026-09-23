@@ -1,15 +1,23 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function useInventory(products) {
+  const { businessId } = useAuth()
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
 
   const fetchHistory = useCallback(async () => {
+    if (!businessId) {
+      setHistory([])
+      setLoading(false)
+      return
+    }
     setLoading(true)
     const { data, error } = await supabase
       .from('stock_history')
       .select('*')
+      .eq('business_id', businessId)
       .order('date', { ascending: false })
     if (error) {
       console.error('useInventory fetch error:', error.message)
@@ -29,7 +37,7 @@ export default function useInventory(products) {
       )
     }
     setLoading(false)
-  }, [])
+  }, [businessId])
 
   useEffect(() => { fetchHistory() }, [fetchHistory])
 
@@ -44,6 +52,7 @@ export default function useInventory(products) {
 
   const addHistoryEntry = async (entry) => {
     const payload = {
+      business_id: businessId,
       date: new Date().toISOString().slice(0, 10),
       product_id: entry.productId,
       product_name: entry.productName,

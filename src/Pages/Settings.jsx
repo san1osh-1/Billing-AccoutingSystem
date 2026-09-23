@@ -1,21 +1,32 @@
-import { useState } from 'react'
-import { Building2, FileText, CreditCard, Percent } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import { Building2, FileText, CreditCard, Percent, ShieldCheck } from 'lucide-react'
 import PageHeader from '../Components/ui/PageHeader'
 import BusinessProfile from '../Components/settings/BusinessProfile'
 import InvoiceSettings from '../Components/settings/InvoiceSettings'
 import PaymentMethodsSettings from '../Components/settings/PaymentMethodsSettings'
+import SecuritySettings from '../Components/settings/SecuritySettings'
 import { useTranslation } from '../i18n/LanguageContext'
 
 const settingsTabs = [
   { key: 'business', labelKey: 'business_profile', icon: Building2 },
+  { key: 'security', labelKey: 'security_credentials', icon: ShieldCheck },
   { key: 'invoice', labelKey: 'invoice_settings', icon: FileText },
   { key: 'tax', labelKey: 'pan_vat', icon: Percent },
   { key: 'payments', labelKey: 'payment_methods', icon: CreditCard },
 ]
 
 export default function Settings() {
+  const location = useLocation()
   const { t } = useTranslation()
-  const [tab, setTab] = useState('business')
+  const searchParams = new URLSearchParams(location.search)
+  const initialTab = searchParams.get('tab') || 'business'
+  const [tab, setTab] = useState(initialTab)
+
+  useEffect(() => {
+    const qTab = new URLSearchParams(location.search).get('tab')
+    if (qTab) setTab(qTab)
+  }, [location.search])
 
   return (
     <div className="space-y-6">
@@ -51,6 +62,7 @@ export default function Settings() {
         <div className="lg:col-span-3">
           <div className="bg-white border border-slate-200 rounded-xl p-6">
             {tab === 'business' && <BusinessProfile />}
+            {tab === 'security' && <SecuritySettings />}
             {tab === 'invoice' && <InvoiceSettings />}
             {tab === 'tax' && (
               <div className="space-y-4">

@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function useCustomers() {
+  const { businessId } = useAuth()
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({ search: '', status: '' })
@@ -11,6 +13,7 @@ export default function useCustomers() {
     const { data, error } = await supabase
       .from('customers')
       .select('*, customer_transactions(*)')
+      .eq('business_id', businessId)
       .order('created_at', { ascending: false })
     if (error) {
       console.error('useCustomers fetch error:', error.message)
@@ -41,7 +44,7 @@ export default function useCustomers() {
       )
     }
     setLoading(false)
-  }, [])
+  }, [businessId])
 
   useEffect(() => { fetchCustomers() }, [fetchCustomers])
 
@@ -66,6 +69,7 @@ export default function useCustomers() {
 
   const addCustomer = async (data) => {
     const payload = {
+      business_id: businessId,
       name: data.name,
       phone: data.phone || '',
       email: data.email || '',
@@ -112,13 +116,13 @@ export default function useCustomers() {
     if (data.paid !== undefined) payload.paid = data.paid
     if (data.due !== undefined) payload.due = data.due
 
-    const { error } = await supabase.from('customers').update(payload).eq('id', id)
+    const { error } = await supabase.from('customers').update(payload).eq('id', id).eq('business_id', businessId)
     if (error) { console.error('updateCustomer error:', error.message); return }
     setCustomers((prev) => prev.map((c) => c.id === id ? { ...c, ...data } : c))
   }
 
   const deleteCustomer = async (id) => {
-    const { error } = await supabase.from('customers').delete().eq('id', id)
+    const { error } = await supabase.from('customers').delete().eq('id', id).eq('business_id', businessId)
     if (error) { console.error('deleteCustomer error:', error.message); return }
     setCustomers((prev) => prev.filter((c) => c.id !== id))
   }

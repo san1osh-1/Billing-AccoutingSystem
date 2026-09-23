@@ -1,18 +1,28 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function useSales() {
+  const { businessId } = useAuth()
   const [sales, setSales] = useState([])
   const [loading, setLoading] = useState(true)
 
   const fetchSales = useCallback(async () => {
+    if (!businessId) {
+      setSales([])
+      setLoading(false)
+      return
+    }
     setLoading(true)
     const { data, error } = await supabase
       .from('sales')
       .select('*, sale_items(*)')
+      .eq('business_id', businessId)
       .order('created_at', { ascending: false })
+
     if (error) {
       console.error('useSales fetch error:', error.message)
+      setSales([])
     } else {
       setSales(
         (data || []).map((s) => ({
@@ -38,31 +48,42 @@ export default function useSales() {
       )
     }
     setLoading(false)
-  }, [])
+  }, [businessId])
 
-  useEffect(() => { fetchSales() }, [fetchSales])
+  useEffect(() => {
+    fetchSales()
+  }, [fetchSales])
 
   const addSale = async (sale) => {
-    // Generate invoice ID
-    const { count } = await supabase.from('sales').select('*', { count: 'exact', head: true })
+    const { count } = await supabase
+      .from('sales')
+      .select('*', { count: 'exact', head: true })
+      .eq('business_id', businessId)
+
     const nextNum = (count || sales.length) + 1043
     const id = `INV-${nextNum}`
     const date = new Date().toISOString().slice(0, 10)
 
-    const { error: saleErr } = await supabase.from('sales').insert([{
-      id,
-      customer_id: sale.customerId || 0,
-      customer_name: sale.customerName || 'Walk-in Customer',
-      date,
-      subtotal: sale.subtotal,
-      discount: sale.discount,
-      vat: sale.vat,
-      grand_total: sale.grandTotal,
-      payment_method: sale.paymentMethod,
-      status: sale.status,
-      cashier: sale.cashier || '',
-    }])
-    if (saleErr) { console.error('addSale error:', saleErr.message); return null }
+    const { error: saleErr } = await supabase.from('sales').insert([
+      {
+        id,
+        business_id: businessId,
+        customer_id: sale.customerId || 0,
+        customer_name: sale.customerName || 'Walk-in Customer',
+        date,
+        subtotal: sale.subtotal,
+        discount: sale.discount,
+        vat: sale.vat,
+        grand_total: sale.grandTotal,
+        payment_method: sale.paymentMethod,
+        status: sale.status,
+        cashier: sale.cashier || '',
+      },
+    ])
+    if (saleErr) {
+      console.error('addSale error:', saleErr.message)
+      return null
+    }
 
     // Insert sale items
     if (sale.items && sale.items.length > 0) {

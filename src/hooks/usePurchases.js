@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function usePurchases() {
+  const { businessId } = useAuth()
   const [purchases, setPurchases] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -10,6 +12,7 @@ export default function usePurchases() {
     const { data, error } = await supabase
       .from('purchases')
       .select('*, purchase_items(*)')
+      .eq('business_id', businessId)
       .order('created_at', { ascending: false })
     if (error) {
       console.error('usePurchases fetch error:', error.message)
@@ -44,13 +47,14 @@ export default function usePurchases() {
   useEffect(() => { fetchPurchases() }, [fetchPurchases])
 
   const addPurchase = async (purchase) => {
-    const { count } = await supabase.from('purchases').select('*', { count: 'exact', head: true })
+    const { count } = await supabase.from('purchases').select('*', { count: 'exact', head: true }).eq('business_id', businessId)
     const nextNum = String((count || purchases.length) + 216).padStart(4, '0')
     const id = `PUR-${nextNum}`
     const date = new Date().toISOString().slice(0, 10)
 
     const { error: purErr } = await supabase.from('purchases').insert([{
       id,
+      business_id: businessId,
       supplier_id: purchase.supplierId || 0,
       supplier_name: purchase.supplierName || '',
       date,

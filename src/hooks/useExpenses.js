@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 
 export default function useExpenses() {
+  const { businessId } = useAuth()
   const [expenses, setExpenses] = useState([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({ search: '', category: '', method: '' })
@@ -11,6 +13,7 @@ export default function useExpenses() {
     const { data, error } = await supabase
       .from('expenses')
       .select('*')
+      .eq('business_id', businessId)
       .order('date', { ascending: false })
     if (error) {
       console.error('useExpenses fetch error:', error.message)
@@ -29,7 +32,7 @@ export default function useExpenses() {
       )
     }
     setLoading(false)
-  }, [])
+  }, [businessId])
 
   useEffect(() => { fetchExpenses() }, [fetchExpenses])
 
@@ -45,13 +48,14 @@ export default function useExpenses() {
   }, [expenses, filters])
 
   const addExpense = async (data) => {
-    const { count } = await supabase.from('expenses').select('*', { count: 'exact', head: true })
+    const { count } = await supabase.from('expenses').select('*', { count: 'exact', head: true }).eq('business_id', businessId)
     const nextNum = String((count || expenses.length) + 211).padStart(4, '0')
     const id = `EXP-${nextNum}`
     const date = new Date().toISOString().slice(0, 10)
 
     const payload = {
       id,
+      business_id: businessId,
       date,
       category: data.category,
       description: data.description,

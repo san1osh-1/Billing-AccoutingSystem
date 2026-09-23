@@ -1,4 +1,5 @@
-import { Search, Bell, Menu, ChevronDown } from 'lucide-react'
+import { Search, Bell, Menu, Settings, Store } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import LanguageSwitcher from '../ui/LanguageSwitcher'
 import DateSystemSwitcher from '../ui/DateSystemSwitcher'
 import { useTranslation } from '../../i18n/LanguageContext'
@@ -24,7 +25,7 @@ export default function Header({ onMenuClick, title }) {
         </div>
 
         {/* Search */}
-        <div className="hidden md:flex flex-1 max-w-md mx-6">
+        <div className="hidden md:flex flex-1 max-w-xs mx-3">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
@@ -37,6 +38,15 @@ export default function Header({ onMenuClick, title }) {
 
         {/* Right */}
         <div className="flex items-center gap-2">
+          <Link
+            to="/sales"
+            className="flex items-center gap-1.5 px-3 h-9 rounded-lg bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-colors whitespace-nowrap"
+            aria-label={t('quick_pos')}
+          >
+            <Store className="w-4 h-4" />
+            <span className="hidden sm:inline">{t('quick_pos')}</span>
+          </Link>
+
           <DateSystemSwitcher />
           <LanguageSwitcher />
 
@@ -47,16 +57,15 @@ export default function Header({ onMenuClick, title }) {
 
           <div className="h-6 w-px bg-slate-200 mx-1"></div>
 
-          <button className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-lg hover:bg-slate-100">
-            <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-semibold text-sm">
-              RS
-            </div>
-            <div className="hidden sm:block text-left">
-              <div className="text-sm font-medium text-slate-900 leading-tight">Ram Shrestha</div>
-              <div className="text-xs text-slate-500 leading-tight">Shrestha Traders</div>
-            </div>
-            <ChevronDown className="hidden sm:block w-4 h-4 text-slate-400" />
-          </button>
+          {/* Settings Icon — replaces user name display */}
+          <Link
+            to="/settings"
+            className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-brand-600 transition-colors"
+            title="Settings"
+            aria-label="Settings"
+          >
+            <Settings className="w-5 h-5" />
+          </Link>
         </div>
       </div>
     </header>
